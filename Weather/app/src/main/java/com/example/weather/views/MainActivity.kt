@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -32,15 +33,31 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.navView)
         navView.setNavigationItemSelectedListener {
             when(it.itemId) {
-                R.id.menuCurrentWeather -> Toast.makeText(applicationContext,
-                    "Clicked current weather menu item", Toast.LENGTH_SHORT).show()
+                R.id.menuCurrentWeather -> {
+                    Toast.makeText(applicationContext,
+                        "Clicked current weather menu item", Toast.LENGTH_SHORT).show()
 
-                R.id.menuForecastForCurrent -> Toast.makeText(applicationContext,
-                    "Clicked forecast menu item", Toast.LENGTH_SHORT).show()
+                    navController.navigate(R.id.currentWeatherFragment)
+                }
 
-                R.id.menuChangeLocation -> Toast.makeText(applicationContext,
-                    "Clicked change location menu item", Toast.LENGTH_SHORT).show()
+                R.id.menuForecastForCurrent -> {
+                    Toast.makeText(applicationContext,
+                        "Clicked forecast menu item", Toast.LENGTH_SHORT).show()
+
+                    navController.navigate(R.id.forecastFragment)
+
+                }
+
+                R.id.menuChangeLocation -> {
+                    Toast.makeText(applicationContext,
+                        "Clicked change location menu item", Toast.LENGTH_SHORT).show()
+
+                    navController.navigate(R.id.changeLocationFragment)
+                }
             }
+
+            // Close menu
+            drawLayout.closeDrawer(GravityCompat.START)
 
             true
         }
