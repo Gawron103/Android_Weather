@@ -12,8 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
-import com.example.weather.models.CurrentWeatherModel
-import com.example.weather.viewmodels.CurrentWeatherViewModel
+import com.example.weather.viewmodels.WeatherSharedViewModel
 import com.example.weather.views.adapters.CurrentWeatherAdapter
 
 class CurrentWeatherFragment : Fragment() {
@@ -22,7 +21,7 @@ class CurrentWeatherFragment : Fragment() {
         fun newInstance() = CurrentWeatherFragment()
     }
 
-    private lateinit var viewModel: CurrentWeatherViewModel
+    private lateinit var viewModel: WeatherSharedViewModel
     private val currentWeatherAdapter = CurrentWeatherAdapter(arrayListOf())
 
     override fun onCreateView(
@@ -34,7 +33,7 @@ class CurrentWeatherFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CurrentWeatherViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(WeatherSharedViewModel::class.java)
         viewModel.refresh()
 
         val countriesList = view?.findViewById<RecyclerView>(R.id.currentWeatherList)
@@ -46,19 +45,18 @@ class CurrentWeatherFragment : Fragment() {
         observeViewModel()
     }
 
-    fun observeViewModel() {
-        viewModel.currentWeather.observe(viewLifecycleOwner, Observer { weather ->
+    private fun observeViewModel() {
+        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
             weather?.let { currentWeatherAdapter.updateWeather(it) }
-
         })
 
-        viewModel.currentWeatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
+        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
             isError?.let {
                 view?.findViewById<TextView>(R.id.fetch_error)?.visibility = if(it) View.VISIBLE else View.GONE
             }
         })
 
-        viewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
+        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isLoading ->
             isLoading?.let {
                 view?.findViewById<ProgressBar>(R.id.view_load)?.visibility = if(it) View.VISIBLE else View.GONE
 
