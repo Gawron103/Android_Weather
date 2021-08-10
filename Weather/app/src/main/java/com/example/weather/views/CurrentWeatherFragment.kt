@@ -9,11 +9,12 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.networking.WeatherApi
+import com.example.weather.networking.WeatherRepository
+import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
-import com.example.weather.views.adapters.CurrentWeatherAdapter
 
 class CurrentWeatherFragment : Fragment() {
 
@@ -21,8 +22,9 @@ class CurrentWeatherFragment : Fragment() {
         fun newInstance() = CurrentWeatherFragment()
     }
 
-    private lateinit var viewModel: WeatherSharedViewModel
-    private val currentWeatherAdapter = CurrentWeatherAdapter(arrayListOf())
+    private val TAG = "CurrentWeatherFragment"
+
+    private lateinit var weatherViewModel: WeatherSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,30 +35,33 @@ class CurrentWeatherFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(WeatherSharedViewModel::class.java)
-        viewModel.refresh()
+        val weatherService = WeatherApi.getInstance()
+        val repository = WeatherRepository(weatherService)
 
-        val countriesList = view?.findViewById<RecyclerView>(R.id.currentWeatherList)
-        countriesList?.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = currentWeatherAdapter
-        }
+        weatherViewModel = ViewModelProvider(requireActivity(), ViewModelFactory(repository)).get(WeatherSharedViewModel::class.java)
 
-        observeViewModel()
+        refreshModels()
+
+        observeWeatherViewModel()
     }
 
-    private fun observeViewModel() {
-        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
-            weather?.let { currentWeatherAdapter.updateWeather(it) }
+    private fun refreshModels() {
+        weatherViewModel.refresh()
+    }
+
+    private fun observeWeatherViewModel() {
+        weatherViewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
+//            weather?.let { currentWeatherAdapter.updateWeather(it) }
+            // Update UI here
         })
 
-        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
+        weatherViewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
             isError?.let {
                 view?.findViewById<TextView>(R.id.fetch_error)?.visibility = if(it) View.VISIBLE else View.GONE
             }
         })
 
-        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isLoading ->
+        weatherViewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isLoading ->
             isLoading?.let {
                 view?.findViewById<ProgressBar>(R.id.view_load)?.visibility = if(it) View.VISIBLE else View.GONE
 

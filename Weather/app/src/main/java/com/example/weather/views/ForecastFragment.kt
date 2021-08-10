@@ -12,8 +12,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.networking.WeatherApi
+import com.example.weather.networking.WeatherRepository
+import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
-import com.example.weather.views.adapters.ForecastListAdapter
+//import com.example.weather.views.adapters.ForecastListAdapter
 
 class ForecastFragment : Fragment() {
 
@@ -22,7 +25,7 @@ class ForecastFragment : Fragment() {
     }
 
     private lateinit var viewModel: WeatherSharedViewModel
-    private val forecastListAdapter = ForecastListAdapter(arrayListOf())
+//    private val forecastListAdapter = ForecastListAdapter(arrayListOf())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,37 +36,40 @@ class ForecastFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(WeatherSharedViewModel::class.java)
+        val weatherService = WeatherApi.getInstance()
+        val repository = WeatherRepository(weatherService)
+        viewModel = ViewModelProvider(requireActivity(), ViewModelFactory(repository)).get(WeatherSharedViewModel::class.java)
+//        viewModel = ViewModelProvider(requireActivity()).get(WeatherSharedViewModel::class.java)
 
-        val forecastList = view?.findViewById<RecyclerView>(R.id.forecastList)
-        forecastList?.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = forecastListAdapter
-        }
+//        val forecastList = view?.findViewById<RecyclerView>(R.id.forecastList)
+//        forecastList?.apply {
+//            layoutManager = LinearLayoutManager(context)
+//            adapter = forecastListAdapter
+//        }
 
-        observeModel()
+//        observeModel()
     }
 
-    private fun observeModel() {
-        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
-            weather?.let { forecastListAdapter.updateWeather(it) }
-        })
-
-        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
-            isError?.let {
-                view?.findViewById<TextView>(R.id.fetch_error)?.visibility = if(it) View.VISIBLE else View.GONE
-            }
-        })
-
-        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isLoading ->
-            isLoading?.let {
-                view?.findViewById<ProgressBar>(R.id.view_load)?.visibility = if(it) View.VISIBLE else View.GONE
-
-                if(it) {
-                    view?.findViewById<TextView>(R.id.fetch_error)?.visibility = View.GONE
-                    view?.findViewById<RecyclerView>(R.id.forecastList)?.visibility = View.GONE
-                }
-            }
-        })
-    }
+//    private fun observeModel() {
+//        viewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
+//            weather?.let { forecastListAdapter.updateWeather(it) }
+//        })
+//
+//        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
+//            isError?.let {
+//                view?.findViewById<TextView>(R.id.fetch_error)?.visibility = if(it) View.VISIBLE else View.GONE
+//            }
+//        })
+//
+//        viewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isLoading ->
+//            isLoading?.let {
+//                view?.findViewById<ProgressBar>(R.id.view_load)?.visibility = if(it) View.VISIBLE else View.GONE
+//
+//                if(it) {
+//                    view?.findViewById<TextView>(R.id.fetch_error)?.visibility = View.GONE
+//                    view?.findViewById<RecyclerView>(R.id.forecastList)?.visibility = View.GONE
+//                }
+//            }
+//        })
+//    }
 }
