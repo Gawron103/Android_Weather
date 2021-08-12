@@ -6,15 +6,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.networking.WeatherApi
 import com.example.weather.networking.WeatherRepository
 import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
+import kotlin.math.round
 
 class CurrentWeatherFragment : Fragment() {
 
@@ -50,8 +52,13 @@ class CurrentWeatherFragment : Fragment() {
     }
 
     private fun observeWeatherViewModel() {
+        weatherViewModel.location.observe(viewLifecycleOwner, Observer { location ->
+            location?.let { updateCityNameUI() }
+        })
+
         weatherViewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
 //            weather?.let { currentWeatherAdapter.updateWeather(it) }
+            weather?.let { updateWeatherUI() }
             // Update UI here
         })
 
@@ -66,10 +73,37 @@ class CurrentWeatherFragment : Fragment() {
                 view?.findViewById<ProgressBar>(R.id.view_load)?.visibility = if(it) View.VISIBLE else View.GONE
 
                 if(it) {
-                    view?.findViewById<TextView>(R.id.fetch_error)?.visibility = View.GONE
-                    view?.findViewById<RecyclerView>(R.id.currentWeatherList)?.visibility = View.GONE
+                    view?.findViewById<TextView>(R.id.view_load)?.visibility = View.GONE
+                    view?.findViewById<ProgressBar>(R.id.fetch_error)?.visibility = View.GONE
                 }
             }
         })
+    }
+
+    private fun updateCityNameUI() {
+        val tvCityName = view?.findViewById<TextView>(R.id.tv_cityName)
+
+        if (null != tvCityName) {
+            tvCityName.text = weatherViewModel.location.value?.get(0)?.cityName
+        }
+    }
+
+    private fun updateWeatherUI() {
+        val ivWeatherIcon = view?.findViewById<ImageView>(R.id.iv_weatherIcon)
+        val tvTemperature = view?.findViewById<TextView>(R.id.tv_temperature)
+        val tvWeatherDesc = view?.findViewById<TextView>(R.id.tv_weatherDesc)
+
+        if (null != tvTemperature) {
+            tvTemperature.text = round(weatherViewModel.weather.value?.currentConditions?.temp!!).toString()
+        }
+
+        if (null != tvWeatherDesc) {
+            tvWeatherDesc.text = weatherViewModel.weather.value?.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
+        }
+
+        if (null != ivWeatherIcon) {
+            // https://openweathermap.org/img/wn/10d@4x.png
+            Glide.with(view?.context!!).load("https://openweathermap.org/img/wn/${weatherViewModel.weather.value?.currentConditions?.weather?.get(0)?.icon}@4x.png").into(ivWeatherIcon)
+        }
     }
 }

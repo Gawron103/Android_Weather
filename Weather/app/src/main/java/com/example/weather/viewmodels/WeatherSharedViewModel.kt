@@ -18,6 +18,9 @@ class WeatherSharedViewModel constructor(private val repository: WeatherReposito
     // API key
     private val API_KEY = "170e393e3a266f65c3472fa8397a3f0f"
 
+    // Model for city name
+    val location = MutableLiveData<LocationModel>()
+
     // Model for weather
     val weather = MutableLiveData<WeatherModel>()
 
@@ -36,8 +39,14 @@ class WeatherSharedViewModel constructor(private val repository: WeatherReposito
 
             if(locationResponse.isSuccessful) {
                 Log.d(TAG, "Location response: ${locationResponse.body()}")
+
                 val lat = locationResponse.body()?.get(0)?.lat
                 val lon = locationResponse.body()?.get(0)?.lon
+
+//                val lat = locationResponse.body()?.location?.get(0)?.lat
+//                val lon = locationResponse.body()?.location?.get(0)?.lon
+
+                location.value = locationResponse.body()
 
                 val weatherResponse = fetchWeather(lat!!, lon!!)
 

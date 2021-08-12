@@ -25,6 +25,11 @@ interface WeatherApi {
         @Query("appid") appKey: String
     ): Response<LocationModel>
 
+//    @GET("/img/wn/")
+//    suspend fun getIcon(
+//        @Query('')
+//    ): Response
+
     companion object {
         private var weatherService: WeatherApi? = null
         private val BASE_URL = "http://api.openweathermap.org"
