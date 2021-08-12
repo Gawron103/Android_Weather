@@ -14,8 +14,18 @@ import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.networking.WeatherApi
 import com.example.weather.networking.WeatherRepository
+import com.example.weather.utils.DateProvider
 import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 import kotlin.math.round
 
 class CurrentWeatherFragment : Fragment() {
@@ -53,7 +63,7 @@ class CurrentWeatherFragment : Fragment() {
 
     private fun observeWeatherViewModel() {
         weatherViewModel.location.observe(viewLifecycleOwner, Observer { location ->
-            location?.let { updateCityNameUI() }
+            location?.let { updateLocationUI() }
         })
 
         weatherViewModel.weather.observe(viewLifecycleOwner, Observer { weather ->
@@ -80,11 +90,23 @@ class CurrentWeatherFragment : Fragment() {
         })
     }
 
-    private fun updateCityNameUI() {
+    private fun updateLocationUI() {
         val tvCityName = view?.findViewById<TextView>(R.id.tv_cityName)
+        val tvLocation = view?.findViewById<TextView>(R.id.tv_location)
+        val tvDate = view?.findViewById<TextView>(R.id.tv_date)
 
         if (null != tvCityName) {
             tvCityName.text = weatherViewModel.location.value?.get(0)?.cityName
+        }
+
+        if (null != tvLocation) {
+            tvLocation.text = weatherViewModel.location.value?.get(0)?.cityName
+                .plus(", ")
+                .plus(weatherViewModel.location.value?.get(0)?.countryCode)
+        }
+
+        if (null != tvDate) {
+            tvDate.text = DateProvider().getDate()
         }
     }
 
@@ -102,7 +124,6 @@ class CurrentWeatherFragment : Fragment() {
         }
 
         if (null != ivWeatherIcon) {
-            // https://openweathermap.org/img/wn/10d@4x.png
             Glide.with(view?.context!!).load("https://openweathermap.org/img/wn/${weatherViewModel.weather.value?.currentConditions?.weather?.get(0)?.icon}@4x.png").into(ivWeatherIcon)
         }
     }
