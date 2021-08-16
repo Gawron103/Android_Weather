@@ -17,15 +17,6 @@ import com.example.weather.networking.WeatherRepository
 import com.example.weather.utils.DateProvider
 import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.*
 import kotlin.math.round
 
 class CurrentWeatherFragment : Fragment() {
@@ -33,8 +24,6 @@ class CurrentWeatherFragment : Fragment() {
     companion object {
         fun newInstance() = CurrentWeatherFragment()
     }
-
-    private val TAG = "CurrentWeatherFragment"
 
     private lateinit var weatherViewModel: WeatherSharedViewModel
 
@@ -52,7 +41,8 @@ class CurrentWeatherFragment : Fragment() {
 
         weatherViewModel = ViewModelProvider(requireActivity(), ViewModelFactory(repository)).get(WeatherSharedViewModel::class.java)
 
-        refreshModels()
+//        refreshModels()
+        weatherViewModel.refresh()
 
         observeWeatherViewModel()
     }

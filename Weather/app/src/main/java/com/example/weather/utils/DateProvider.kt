@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 class DateProvider {
+
     fun getDate(): String {
         val builder = StringBuilder()
         val currentMoment: Instant = Clock.System.now()
@@ -20,4 +21,18 @@ class DateProvider {
 
         return builder.toString()
     }
+
+    fun convertTime(timestamp: Int): String {
+        val convertedTime = Instant.fromEpochMilliseconds(timestamp.toLong() * 1000)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+
+        return convertedTime.toString().split("T", ".")[1].toString()
+    }
+
+    fun getDayName(timestamp: Int): String {
+        val convertedTime = Instant.fromEpochMilliseconds(timestamp.toLong() * 1000)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+        return convertedTime.dayOfWeek.toString().lowercase().replaceFirstChar { it.uppercase() }
+    }
+
 }

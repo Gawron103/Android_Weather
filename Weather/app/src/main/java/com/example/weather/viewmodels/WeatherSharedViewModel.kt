@@ -43,9 +43,6 @@ class WeatherSharedViewModel constructor(private val repository: WeatherReposito
                 val lat = locationResponse.body()?.get(0)?.lat
                 val lon = locationResponse.body()?.get(0)?.lon
 
-//                val lat = locationResponse.body()?.location?.get(0)?.lat
-//                val lon = locationResponse.body()?.location?.get(0)?.lon
-
                 location.value = locationResponse.body()
 
                 val weatherResponse = fetchWeather(lat!!, lon!!)

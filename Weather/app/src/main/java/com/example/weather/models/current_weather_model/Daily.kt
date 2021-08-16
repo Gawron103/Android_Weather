@@ -3,6 +3,8 @@ package com.example.weather.models.current_weather_model
 import com.google.gson.annotations.SerializedName
 
 data class Daily(
+    @SerializedName("dt")
+    val currentTime: Int?,
 
     @SerializedName("sunrise")
     val sunrise: Int?,
