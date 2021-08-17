@@ -13,6 +13,9 @@ data class Current(
     @SerializedName("temp")
     val temp: Double?,
 
+    @SerializedName("humidity")
+    val humidity: Int?,
+
     @SerializedName("feels_like")
     val feelsLike: Double?,
 
