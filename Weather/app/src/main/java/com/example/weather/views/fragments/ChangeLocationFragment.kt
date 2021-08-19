@@ -1,4 +1,4 @@
-package com.example.weather.views
+package com.example.weather.views.fragments
 
 import android.os.Bundle
 import android.util.Log

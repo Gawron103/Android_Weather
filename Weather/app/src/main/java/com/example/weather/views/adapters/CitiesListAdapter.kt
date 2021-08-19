@@ -1,5 +1,6 @@
 package com.example.weather.views.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,10 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
 import com.example.weather.models.TestModel
-import com.example.weather.models.current_weather_model.Current
-import com.example.weather.models.current_weather_model.Daily
+import com.example.weather.views.fragments.DetailedWeatherFragment
+import com.example.weather.views.interfaces.Communicator
 
-class CitiesListAdapter(private var citiesList: ArrayList<TestModel>): RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>() {
+class CitiesListAdapter(
+    private var citiesList: ArrayList<TestModel>,
+    private val communicator: Communicator
+    ):
+    RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>() {
 
     fun updateCities(newCities: List<TestModel>) {
         citiesList.clear()
@@ -28,7 +33,9 @@ class CitiesListAdapter(private var citiesList: ArrayList<TestModel>): RecyclerV
 
     override fun getItemCount(): Int = citiesList.size
 
-    class CitiesListViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    inner class CitiesListViewHolder(view: View): RecyclerView.ViewHolder(view) {
+
+        private val TAG = "CitiesListViewHolder"
 
         private val cityName = view.findViewById<TextView>(R.id.tv_locationName)
         private val countryCode = view.findViewById<TextView>(R.id.tv_countryCode)
@@ -44,8 +51,13 @@ class CitiesListAdapter(private var citiesList: ArrayList<TestModel>): RecyclerV
             humidityVal.text = modelForLocation.weatherModel?.currentConditions?.humidity.toString()
             minTempVal.text = modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.min.toString()
             maxTempVal.text = modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.max.toString()
-        }
 
+            itemView.setOnClickListener {
+                communicator.pushFragment(DetailedWeatherFragment(modelForLocation), DetailedWeatherFragment.TAG)
+                Log.d(TAG, "${cityName.text} clicked")
+
+            }
+        }
     }
 
 }

@@ -2,75 +2,41 @@ package com.example.weather.views
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
-import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.weather.R
-import com.google.android.material.navigation.NavigationView
+import com.example.weather.views.fragments.CitiesMainWeatherFragment
+import com.example.weather.views.fragments.DetailedWeatherFragment
+import com.example.weather.views.interfaces.Communicator
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var navController: NavController
-    private lateinit var toggle: ActionBarDrawerToggle
+class MainActivity : AppCompatActivity(), Communicator {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar: Toolbar? = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        val drawLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
-        toggle = ActionBarDrawerToggle(this, drawLayout, toolbar, R.string.open, R.string.close)
-        drawLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        val navView = findViewById<NavigationView>(R.id.navView)
-        navView.setNavigationItemSelectedListener {
-            when(it.itemId) {
-                R.id.menuCurrentWeather -> {
-                    Toast.makeText(applicationContext,
-                        "Clicked current weather menu item", Toast.LENGTH_SHORT).show()
-
-                    navController.navigate(R.id.currentWeatherFragment)
-                }
-
-                R.id.menuForecastForCurrent -> {
-                    Toast.makeText(applicationContext,
-                        "Clicked forecast menu item", Toast.LENGTH_SHORT).show()
-
-                    navController.navigate(R.id.forecastFragment)
-
-                }
-
-                R.id.menuChangeLocation -> {
-                    Toast.makeText(applicationContext,
-                        "Clicked change location menu item", Toast.LENGTH_SHORT).show()
-
-                    navController.navigate(R.id.changeLocationFragment)
-                }
-            }
-
-            // Close menu
-            drawLayout.closeDrawer(GravityCompat.START)
-
-            true
-        }
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
+        pushFragment(CitiesMainWeatherFragment(), CitiesMainWeatherFragment.TAG)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(toggle.onOptionsItemSelected(item)) {
-            return true
-        }
+    override fun pushFragment(fragment: Fragment, tag: String) {
+        when (tag) {
+            CitiesMainWeatherFragment.TAG -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainerView, fragment, tag)
+                    .addToBackStack(tag)
+                    .commit()
+            }
 
-        return super.onOptionsItemSelected(item)
+            DetailedWeatherFragment.TAG -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainerView, fragment, tag)
+                    .addToBackStack(tag)
+                    .commit()
+            }
+        }
+    }
+
+    override fun popFragment(tag: String) {
+        supportFragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 }

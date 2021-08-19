@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.ChangeLocationFragment">
+    tools:context=".views.fragments.ChangeLocationFragment">
 
     <EditText
         android:id="@+id/etCityNameInput"
