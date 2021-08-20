@@ -10,6 +10,7 @@ import com.example.weather.R
 import com.example.weather.models.TestModel
 import com.example.weather.views.fragments.DetailedWeatherFragment
 import com.example.weather.views.interfaces.Communicator
+import kotlin.math.round
 
 class CitiesListAdapter(
     private var citiesList: ArrayList<TestModel>,
@@ -47,10 +48,10 @@ class CitiesListAdapter(
         fun bind(modelForLocation: TestModel) {
             cityName.text = modelForLocation.locationModel?.get(0)?.cityName
             countryCode.text = modelForLocation.locationModel?.get(0)?.countryCode
-            tempVal.text = modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.day.toString()
+            tempVal.text = round(modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.day!!).toString()
             humidityVal.text = modelForLocation.weatherModel?.currentConditions?.humidity.toString()
-            minTempVal.text = modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.min.toString()
-            maxTempVal.text = modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.max.toString()
+            minTempVal.text = round(modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.min!!).toString()
+            maxTempVal.text = round(modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.max!!).toString()
 
             itemView.setOnClickListener {
                 communicator.pushFragment(DetailedWeatherFragment(modelForLocation), DetailedWeatherFragment.TAG)

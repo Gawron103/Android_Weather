@@ -42,7 +42,7 @@ class ForecastListAdapter(private var forecast: ArrayList<Daily>): RecyclerView.
         private val sunset = view.findViewById<TextView>(R.id.tv_sunset)
 
         fun bindWeatherData(dailyWeather: Daily) {
-            Glide.with(context).load("https://openweathermap.org/img/wn/${dailyWeather.weather?.get(0)?.icon}@4x.png").into(icon)
+            Glide.with(context).load("https://openweathermap.org/img/wn/${dailyWeather.weather?.get(0)?.icon}.png").into(icon)
 
             description.text = dailyWeather.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
             temp.text = round(dailyWeather.tempInDay?.day!!).toString()
