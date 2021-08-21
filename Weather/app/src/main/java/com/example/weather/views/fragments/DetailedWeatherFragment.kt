@@ -71,7 +71,7 @@ class DetailedWeatherFragment(private val data: TestModel) : Fragment() {
         val cityWeatherTemp = view?.findViewById<TextView>(R.id.tv_cityWeatherTemp)
         val cityLocation = view?.findViewById<TextView>(R.id.tv_cityWeatherLocation)
 
-        Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${data?.weatherModel?.currentConditions?.weather?.get(0)?.icon}@4x.png").into(cityWeatherIcon!!)
+        Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${data?.weatherModel?.currentConditions?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(cityWeatherIcon!!)
 
         cityWeatherDesc?.text = data.weatherModel?.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
         cityWeatherTemp?.text = round(data.weatherModel?.currentConditions?.temp!!).toString()

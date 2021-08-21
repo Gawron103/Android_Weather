@@ -45,10 +45,10 @@ class DetailedWeatherAdapter(
         fun bind(weather: Daily) {
             val provider = DateProvider()
 
-            dayName. text = provider.getDayName(weather?.currentTime!!)
+            dayName.text = provider.getDayName(weather?.currentTime!!)
             temperature.text = round(weather?.tempInDay?.day!!).toString()
 
-            Glide.with(context).load("https://openweathermap.org/img/wn/${weather?.weather?.get(0)?.icon}@4x.png").into(weatherIcon)
+            Glide.with(context).load("https://openweathermap.org/img/wn/${weather?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(weatherIcon)
         }
     }
 }

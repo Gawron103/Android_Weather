@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.networking.PlacesApi
+import com.example.weather.networking.PlacesRepository
 import com.example.weather.networking.WeatherApi
 import com.example.weather.networking.WeatherRepository
+import com.example.weather.viewmodels.PlacesViewModel
 import com.example.weather.viewmodels.ViewModelFactory
 import com.example.weather.viewmodels.WeatherSharedViewModel
 import com.example.weather.views.adapters.CitiesListAdapter
@@ -21,6 +24,7 @@ import com.example.weather.views.interfaces.Communicator
 class CitiesMainWeatherFragment: Fragment() {
 
     private lateinit var communicator: Communicator
+//    private lateinit var placesViewModel: PlacesViewModel
     private lateinit var citiesWeatherViewModel: WeatherSharedViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
     private val mockCities = listOf("Szczecin", "London", "Barcelona", "Rome", "Tokyo", "Berlin")
@@ -49,7 +53,10 @@ class CitiesMainWeatherFragment: Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val weatherService = WeatherApi.getInstance()
-        val weatherRepository = WeatherRepository(weatherService)
+        val placesService = PlacesApi.getInstance()
+        val weatherRepository = WeatherRepository(weatherService, placesService)
+
+//        val placesRepository = PlacesRepository(placesService)
 
         citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), communicator)
 
@@ -58,14 +65,21 @@ class CitiesMainWeatherFragment: Fragment() {
             ViewModelFactory(weatherRepository)
         ).get(WeatherSharedViewModel::class.java)
 
+//        placesViewModel = ViewModelProvider(
+//            requireActivity(),
+//            ViewModelFactory(placesRepository)
+//        ).get(PlacesViewModel::class.java)
+
         val citiesList = requireView().findViewById<RecyclerView>(R.id.rv_citiesList).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = citiesWeatherListAdapter
         }
 
         citiesWeatherViewModel.refresh(mockCities)
+//        placesViewModel.refresh(mockCities)
 
         observeWeatherViewModel()
+//        observePlacesViewModel()
     }
 
     private fun observeWeatherViewModel() {
@@ -73,4 +87,10 @@ class CitiesMainWeatherFragment: Fragment() {
             citiesWeatherListAdapter.updateCities(it)
         })
     }
+
+//    private fun observePlacesViewModel() {
+//        placesViewModel.places.observe(viewLifecycleOwner, Observer {
+//
+//        })
+//    }
 }

@@ -5,26 +5,32 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weather.BuildConfig
 import com.example.weather.models.TestModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
+import com.example.weather.models.places_model.PlacesModel
+import com.example.weather.networking.PlacesRepository
 import com.example.weather.networking.WeatherRepository
 import kotlinx.coroutines.*
 import retrofit2.Response
 
-class WeatherSharedViewModel constructor(private val repository: WeatherRepository): ViewModel() {
+class WeatherSharedViewModel constructor(
+    private val weatherRepository: WeatherRepository
+//    private val placesRepository: PlacesRepository
+): ViewModel() {
 
     // Debug tag
     private val TAG = "WeatherSharedModel"
-
-    // API key
-    private val API_KEY = "170e393e3a266f65c3472fa8397a3f0f"
 
     // Model for city name
     val location = MutableLiveData<LocationModel>()
 
     // Model for weather
     val weather = MutableLiveData<WeatherModel>()
+
+    // Model for places
+    val places = MutableLiveData<PlacesModel>()
 
     // Says if there is an error when loading the data
     val weatherLoadError = MutableLiveData<Boolean>()
@@ -58,16 +64,15 @@ class WeatherSharedViewModel constructor(private val repository: WeatherReposito
                         weatherLoadError.value = false
                         Log.d(TAG, "Weather response: ${weatherResponse.body()}")
 
-                        /* test for new design */
-                        testModels.add(TestModel(weather.value, location.value))
-//                    val mergeResult = mergeModelsToTestModel(location, weather)
-//                        testModel.addSource(weather) { value ->
-//                            testModel.value?.plus(mergeModelsToTestModel(location, weather))
-//                        }
-//                        testModel.addSource(location) { value ->
-//                            testModel.value?.plus(mergeModelsToTestModel(location, weather))
-//                        }
+                        val placeRefResponse = fetchPlaceId(cityName)
 
+                        if (placeRefResponse.isSuccessful) {
+                            places.value = placeRefResponse.body()
+
+                            testModels.add(TestModel(weather.value, location.value, places.value))
+                        }
+
+//                        testModels.add(TestModel(weather.value, location.value))
                     } else {
                         weatherLoadError.value = true
                         Log.d(TAG, "Response failed")
@@ -83,31 +88,27 @@ class WeatherSharedViewModel constructor(private val repository: WeatherReposito
         loading.value = false
     }
 
-    /* test for new design */
-//    private fun mergeModelsToTestModel(
-//        location: MutableLiveData<LocationModel>,
-//        weather: MutableLiveData<WeatherModel>
-//    ): TestModel {
-//        val locationData = location.value
-//        val weatherData = weather.value
-//
-//        return TestModel(weatherModel = weatherData, locationModel = locationData)
-//    }
-
     private suspend fun fetchWeather(lat: Double, lon: Double): Response<WeatherModel> {
-                return repository.getWeather(
+                return weatherRepository.getWeather(
                     lat,
                     lon,
                     "minutely,hourly,alerts",
                     "metric",
-                    API_KEY
+                    BuildConfig.WEATHER_API_KEY
                 )
     }
 
     private suspend fun fetchLocation(city: String): Response<LocationModel> {
-        return repository.getCoordinates(
+        return weatherRepository.getCoordinates(
             city,
-            API_KEY
+            BuildConfig.WEATHER_API_KEY
+        )
+    }
+
+    private suspend fun fetchPlaceId(cityName: String): Response<PlacesModel> {
+        return weatherRepository.getPlaceId(
+            cityName,
+            BuildConfig.PLACES_API_KEY
         )
     }
 }
