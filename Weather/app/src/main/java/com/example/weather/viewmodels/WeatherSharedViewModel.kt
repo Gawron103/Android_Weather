@@ -41,51 +41,66 @@ class WeatherSharedViewModel constructor(
     var testModel = MediatorLiveData<List<TestModel>>()
 
     fun refresh(citiesName: List<String>){
-        loading.value = true
-
         viewModelScope.launch {
             val testModels = mutableListOf<TestModel>()
 
-            for (cityName in citiesName) {
-                val locationResponse = fetchLocation(cityName)
+            try {
+                loading.postValue(true)
 
-                if (locationResponse.isSuccessful) {
-                    Log.d(TAG, "Location response: ${locationResponse.body()}")
+                for (cityName in citiesName) {
+                    val locationResponse = fetchLocation(cityName)
 
-                    val lat = locationResponse.body()?.get(0)?.lat
-                    val lon = locationResponse.body()?.get(0)?.lon
+                    if (locationResponse.isSuccessful) {
+                        Log.d(TAG, "Location response: ${locationResponse.body()}")
 
-                    location.value = locationResponse.body()
+                        val lat = locationResponse.body()?.get(0)?.lat
+                        val lon = locationResponse.body()?.get(0)?.lon
 
-                    val weatherResponse = fetchWeather(lat!!, lon!!)
+                        location.value = locationResponse.body()
 
-                    if (weatherResponse.isSuccessful) {
-                        weather.value = weatherResponse.body()
-                        weatherLoadError.value = false
-                        Log.d(TAG, "Weather response: ${weatherResponse.body()}")
+                        val weatherResponse = fetchWeather(lat!!, lon!!)
 
-                        val placeRefResponse = fetchPlaceId(cityName)
+                        if (weatherResponse.isSuccessful) {
+                            weather.value = weatherResponse.body()
+                            weatherLoadError.postValue(false)
+                            Log.d(TAG, "Weather response: ${weatherResponse.body()}")
 
-                        if (placeRefResponse.isSuccessful) {
-                            places.value = placeRefResponse.body()
+                            val placeRefResponse = fetchPlaceId(cityName)
 
-                            testModels.add(TestModel(weather.value, location.value, places.value))
-                        }
+                            if (placeRefResponse.isSuccessful) {
+                                places.value = placeRefResponse.body()
+
+                                testModels.add(
+                                    TestModel(
+                                        weather.value,
+                                        location.value,
+                                        places.value
+                                    )
+                                )
+                            }
 
 //                        testModels.add(TestModel(weather.value, location.value))
+                        } else {
+                            weatherLoadError.postValue(true)
+                            Log.d(TAG, "Response failed")
+                            break
+                        }
                     } else {
-                        weatherLoadError.value = true
-                        Log.d(TAG, "Response failed")
+                        weatherLoadError.postValue(true)
+                        break
                     }
                 }
+            }
+            catch (e: Exception) {
+                weatherLoadError.value = true
             }
 
             if (testModels.isNotEmpty()) {
                 testModel.value = testModels
             }
-        }
 
-        loading.value = false
+            loading.postValue(false)
+        }
     }
 
     private suspend fun fetchWeather(lat: Double, lon: Double): Response<WeatherModel> {

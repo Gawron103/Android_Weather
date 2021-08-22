@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,12 +83,49 @@ class CitiesMainWeatherFragment: Fragment() {
 
         observeWeatherViewModel()
 //        observePlacesViewModel()
+
+        val retryBtn = view?.findViewById<Button>(R.id.btn_retry)
+        retryBtn?.setOnClickListener {
+            Log.d(TAG, "Retry btn clicked")
+            citiesWeatherViewModel.refresh(mockCities)
+        }
     }
 
     private fun observeWeatherViewModel() {
         citiesWeatherViewModel.testModel.observe(viewLifecycleOwner, Observer {
             citiesWeatherListAdapter.updateCities(it)
         })
+
+        citiesWeatherViewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
+            view?.findViewById<TextView>(R.id.tv_errorLoad)?.visibility = if(isError) View.VISIBLE else View.GONE
+
+            if(isError) {
+                view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.VISIBLE
+                view?.findViewById<Button>(R.id.btn_add)?.visibility = View.GONE
+            }
+        })
+
+        citiesWeatherViewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
+            isLoading?.let {
+                view?.findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isLoading) View.VISIBLE else View.GONE
+
+                if(isLoading) {
+                    view?.findViewById<TextView>(R.id.tv_errorLoad)?.visibility = View.GONE
+                    view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
+                }
+            }
+        })
+
+
+
+//        citiesWeatherViewModel.loading.observe(viewLifecycleOwner, Observer { isloading ->
+//            view?.findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isloading) View.VISIBLE else View.GONE
+//        })
+
+//        citiesWeatherViewModel.weatherLoadError.observe(viewLifecycleOwner, Observer {
+//            view?.findViewById<TextView>(R.id.tv_errorLoad)?.visibility = if(it) View.VISIBLE else View.GONE
+//            view?.findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(it) View.VISIBLE else View.GONE
+//        })
     }
 
 //    private fun observePlacesViewModel() {
