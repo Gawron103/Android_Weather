@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
+import com.example.weather.db.City
 import com.example.weather.models.TestModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
@@ -40,7 +41,7 @@ class WeatherSharedViewModel constructor(
 
     var testModel = MediatorLiveData<List<TestModel>>()
 
-    fun refresh(citiesName: List<String>){
+    fun refresh(citiesName: List<City>){
         viewModelScope.launch {
             val testModels = mutableListOf<TestModel>()
 
@@ -48,7 +49,7 @@ class WeatherSharedViewModel constructor(
                 loading.postValue(true)
 
                 for (cityName in citiesName) {
-                    val locationResponse = fetchLocation(cityName)
+                    val locationResponse = fetchLocation(cityName.name)
 
                     if (locationResponse.isSuccessful) {
                         Log.d(TAG, "Location response: ${locationResponse.body()}")
@@ -65,13 +66,14 @@ class WeatherSharedViewModel constructor(
                             weatherLoadError.postValue(false)
                             Log.d(TAG, "Weather response: ${weatherResponse.body()}")
 
-                            val placeRefResponse = fetchPlaceId(cityName)
+                            val placeRefResponse = fetchPlaceId(cityName.name)
 
                             if (placeRefResponse.isSuccessful) {
                                 places.value = placeRefResponse.body()
 
                                 testModels.add(
                                     TestModel(
+                                        cityName.id,
                                         weather.value,
                                         location.value,
                                         places.value

@@ -6,6 +6,8 @@ import com.example.weather.models.places_model.PlacesModel
 
 data class TestModel(
 
+    val idInDb: Int?,
+
     val weatherModel: WeatherModel?,
 
     val locationModel: LocationModel?,

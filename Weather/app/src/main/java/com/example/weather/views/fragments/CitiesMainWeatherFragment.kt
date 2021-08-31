@@ -9,28 +9,31 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.db.City
+import com.example.weather.db.CityDatabase
 import com.example.weather.networking.PlacesApi
-import com.example.weather.networking.PlacesRepository
 import com.example.weather.networking.WeatherApi
 import com.example.weather.networking.WeatherRepository
-import com.example.weather.viewmodels.PlacesViewModel
-import com.example.weather.viewmodels.ViewModelFactory
-import com.example.weather.viewmodels.WeatherSharedViewModel
+import com.example.weather.repositories.CityRepository
+import com.example.weather.viewmodels.*
 import com.example.weather.views.adapters.CitiesListAdapter
 import com.example.weather.views.interfaces.Communicator
+import com.example.weather.views.interfaces.DatabaseCommunicator
 
-class CitiesMainWeatherFragment: Fragment() {
+class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private lateinit var communicator: Communicator
 //    private lateinit var placesViewModel: PlacesViewModel
+    private lateinit var cityViewModel: CityViewModel
     private lateinit var citiesWeatherViewModel: WeatherSharedViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
-    private val mockCities = listOf("Szczecin", "London", "Barcelona", "Rome", "Tokyo", "Berlin")
+//    private val mockCities = listOf("Szczecin", "London", "Barcelona", "Rome", "Tokyo", "Berlin")
 
     companion object {
         val TAG = CitiesMainWeatherFragment::class.java.simpleName
@@ -55,13 +58,21 @@ class CitiesMainWeatherFragment: Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        val cityDao = CityDatabase.getInstance(requireContext()).cityDAO
+        val cityRepository = CityRepository(cityDao)
+        cityViewModel = ViewModelProvider(
+            requireActivity(),
+            CityViewModelFactory(cityRepository)
+        ).get(CityViewModel::class.java)
+
         val weatherService = WeatherApi.getInstance()
         val placesService = PlacesApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService)
 
 //        val placesRepository = PlacesRepository(placesService)
 
-        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), communicator)
+        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), communicator, this)
 
         citiesWeatherViewModel = ViewModelProvider(
             requireActivity(),
@@ -78,16 +89,23 @@ class CitiesMainWeatherFragment: Fragment() {
             adapter = citiesWeatherListAdapter
         }
 
-        citiesWeatherViewModel.refresh(mockCities)
+//        citiesWeatherViewModel.refresh(mockCities)
+//        val citiesNames = mutableListOf<String>()
+//        cityViewModel.cities.value?.forEach { citiesNames.add(it.name) }
+//        citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
 //        placesViewModel.refresh(mockCities)
+
 
         observeWeatherViewModel()
 //        observePlacesViewModel()
+        observeDatabase()
+
+        cityViewModel.refresh()
 
         val retryBtn = view?.findViewById<Button>(R.id.btn_retry)
         retryBtn?.setOnClickListener {
             Log.d(TAG, "Retry btn clicked")
-            citiesWeatherViewModel.refresh(mockCities)
+            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
         }
     }
 
@@ -116,8 +134,6 @@ class CitiesMainWeatherFragment: Fragment() {
             }
         })
 
-
-
 //        citiesWeatherViewModel.loading.observe(viewLifecycleOwner, Observer { isloading ->
 //            view?.findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isloading) View.VISIBLE else View.GONE
 //        })
@@ -128,9 +144,32 @@ class CitiesMainWeatherFragment: Fragment() {
 //        })
     }
 
-//    private fun observePlacesViewModel() {
-//        placesViewModel.places.observe(viewLifecycleOwner, Observer {
-//
-//        })
-//    }
+    private fun observeDatabase() {
+        cityViewModel.cities.observe(viewLifecycleOwner, object: Observer<List<City>> {
+            override fun onChanged(t: List<City>?) {
+//                Log.d(TAG, "Cities database changed")
+//                Log.d(TAG, "Database: ${t!!}")
+
+//                val citiesNames = mutableListOf<String>()
+//                t!!.forEach { citiesNames.add(it.name) }
+                citiesWeatherViewModel.refresh(t!!)
+
+                Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
+            }
+        })
+    }
+
+    override fun addCity(city: City) {
+        cityViewModel.insert(city)
+
+        // need to refresh
+        cityViewModel.refresh()
+    }
+
+    override fun deleteCity(city: City) {
+        cityViewModel.remove(city)
+
+        // need to refresh
+        cityViewModel.refresh()
+    }
 }
