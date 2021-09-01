@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.weather.R
 import com.example.weather.db.City
 import com.example.weather.db.CityDatabase
@@ -95,10 +96,17 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 //        citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
 //        placesViewModel.refresh(mockCities)
 
+        val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.sr_CitiesList)
+        swipeRefreshLayout?.setOnRefreshListener {
+            cityViewModel.refresh()
+            Log.d(TAG, "Refresh view")
+            swipeRefreshLayout.isRefreshing = false
+        }
 
+
+        observeDatabase()
         observeWeatherViewModel()
 //        observePlacesViewModel()
-        observeDatabase()
 
         cityViewModel.refresh()
 
@@ -106,6 +114,12 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         retryBtn?.setOnClickListener {
             Log.d(TAG, "Retry btn clicked")
             citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
+        }
+
+        val addBtn = view?.findViewById<Button>(R.id.btn_add)
+        addBtn?.setOnClickListener {
+            Log.d(TAG, "Add btn clicked")
+            communicator.pushFragment(AddCityFragment(this), AddCityFragment.TAG)
         }
     }
 
@@ -144,18 +158,25 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 //        })
     }
 
+//    private fun observeDatabase() {
+//        cityViewModel.cities.observe(viewLifecycleOwner, object: Observer<List<City>> {
+//            override fun onChanged(t: List<City>?) {
+////                Log.d(TAG, "Cities database changed")
+////                Log.d(TAG, "Database: ${t!!}")
+//
+////                val citiesNames = mutableListOf<String>()
+////                t!!.forEach { citiesNames.add(it.name) }
+//                citiesWeatherViewModel.refresh(t!!)
+//
+//                Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
+//            }
+//        })
+//    }
+
     private fun observeDatabase() {
-        cityViewModel.cities.observe(viewLifecycleOwner, object: Observer<List<City>> {
-            override fun onChanged(t: List<City>?) {
-//                Log.d(TAG, "Cities database changed")
-//                Log.d(TAG, "Database: ${t!!}")
-
-//                val citiesNames = mutableListOf<String>()
-//                t!!.forEach { citiesNames.add(it.name) }
-                citiesWeatherViewModel.refresh(t!!)
-
+        cityViewModel.cities.observe(viewLifecycleOwner, Observer {
+                citiesWeatherViewModel.refresh(it!!)
                 Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
-            }
         })
     }
 
@@ -163,13 +184,13 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         cityViewModel.insert(city)
 
         // need to refresh
-        cityViewModel.refresh()
+//        cityViewModel.refresh()
     }
 
     override fun deleteCity(city: City) {
         cityViewModel.remove(city)
 
         // need to refresh
-        cityViewModel.refresh()
+//        cityViewModel.refresh()
     }
 }

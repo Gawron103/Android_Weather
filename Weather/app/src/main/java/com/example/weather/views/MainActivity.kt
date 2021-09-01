@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.weather.R
+import com.example.weather.views.fragments.AddCityFragment
 import com.example.weather.views.fragments.CitiesMainWeatherFragment
 import com.example.weather.views.fragments.DetailedWeatherFragment
 import com.example.weather.views.interfaces.Communicator
@@ -28,6 +29,13 @@ class MainActivity : AppCompatActivity(), Communicator {
             }
 
             DetailedWeatherFragment.TAG -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainerView, fragment, tag)
+                    .addToBackStack(tag)
+                    .commit()
+            }
+
+            AddCityFragment.TAG -> {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView, fragment, tag)
                     .addToBackStack(tag)

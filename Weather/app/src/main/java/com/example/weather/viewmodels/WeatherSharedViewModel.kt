@@ -46,7 +46,7 @@ class WeatherSharedViewModel constructor(
             val testModels = mutableListOf<TestModel>()
 
             try {
-                loading.postValue(true)
+                loading.value = true
 
                 for (cityName in citiesName) {
                     val locationResponse = fetchLocation(cityName.name)
@@ -101,7 +101,7 @@ class WeatherSharedViewModel constructor(
                 testModel.value = testModels
             }
 
-            loading.postValue(false)
+            loading.value = false
         }
     }
 
