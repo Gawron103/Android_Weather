@@ -42,66 +42,72 @@ class WeatherSharedViewModel constructor(
     var testModel = MediatorLiveData<List<TestModel>>()
 
     fun refresh(citiesName: List<City>){
-        viewModelScope.launch {
-            val testModels = mutableListOf<TestModel>()
+        if (citiesName.isNotEmpty()) {
+            viewModelScope.launch {
+                val testModels = mutableListOf<TestModel>()
 
-            try {
-                loading.value = true
+                try {
+                    loading.value = true
 
-                for (cityName in citiesName) {
-                    val locationResponse = fetchLocation(cityName.name)
+                    for (cityName in citiesName) {
+                        val locationResponse = fetchLocation(cityName.name)
 
-                    if (locationResponse.isSuccessful) {
-                        Log.d(TAG, "Location response: ${locationResponse.body()}")
+                        if (locationResponse.isSuccessful) {
+                            Log.d(TAG, "Location response: ${locationResponse.body()}")
 
-                        val lat = locationResponse.body()?.get(0)?.lat
-                        val lon = locationResponse.body()?.get(0)?.lon
+                            val lat = locationResponse.body()?.get(0)?.lat
+                            val lon = locationResponse.body()?.get(0)?.lon
 
-                        location.value = locationResponse.body()
+                            location.value = locationResponse.body()
 
-                        val weatherResponse = fetchWeather(lat!!, lon!!)
+                            val weatherResponse = fetchWeather(lat!!, lon!!)
 
-                        if (weatherResponse.isSuccessful) {
-                            weather.value = weatherResponse.body()
-                            weatherLoadError.postValue(false)
-                            Log.d(TAG, "Weather response: ${weatherResponse.body()}")
+                            if (weatherResponse.isSuccessful) {
+                                weather.value = weatherResponse.body()
+                                weatherLoadError.postValue(false)
+                                Log.d(TAG, "Weather response: ${weatherResponse.body()}")
 
-                            val placeRefResponse = fetchPlaceId(cityName.name)
+                                val placeRefResponse = fetchPlaceId(cityName.name)
 
-                            if (placeRefResponse.isSuccessful) {
-                                places.value = placeRefResponse.body()
+                                if (placeRefResponse.isSuccessful) {
+                                    places.value = placeRefResponse.body()
 
-                                testModels.add(
-                                    TestModel(
-                                        cityName.id,
-                                        weather.value,
-                                        location.value,
-                                        places.value
+                                    testModels.add(
+                                        TestModel(
+                                            cityName.id,
+                                            weather.value,
+                                            location.value,
+                                            places.value
+                                        )
                                     )
-                                )
-                            }
+                                }
 
 //                        testModels.add(TestModel(weather.value, location.value))
+                            } else {
+                                weatherLoadError.postValue(true)
+                                Log.d(TAG, "Response failed")
+                                break
+                            }
                         } else {
                             weatherLoadError.postValue(true)
-                            Log.d(TAG, "Response failed")
                             break
                         }
-                    } else {
-                        weatherLoadError.postValue(true)
-                        break
                     }
+                } catch (e: Exception) {
+                    weatherLoadError.value = true
                 }
-            }
-            catch (e: Exception) {
-                weatherLoadError.value = true
-            }
 
-            if (testModels.isNotEmpty()) {
-                testModel.value = testModels
-            }
+                if (testModels.isNotEmpty()) {
+                    testModel.value = testModels
+                }
 
+                loading.value = false
+            }
+        }
+        else {
+            testModel.value = listOf()
             loading.value = false
+            weatherLoadError.value = false
         }
     }
 

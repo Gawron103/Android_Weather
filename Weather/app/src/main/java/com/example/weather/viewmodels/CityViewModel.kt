@@ -1,5 +1,6 @@
 package com.example.weather.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,24 +11,30 @@ import kotlinx.coroutines.launch
 
 class CityViewModel(private val cityRepository: CityRepository): ViewModel() {
 
-//    val cities = cityRepository.cities
-    val cities = MutableLiveData<List<City>>()
+    private val TAG = "CityViewModel"
 
-    fun refresh() {
-        viewModelScope.launch {
-            cities.value = cityRepository.getAllCities()
-        }
-    }
+//    val cities = cityRepository.cities
+//    val cities = MutableLiveData<List<City>>()
+
+    val cities = cityRepository.cities
+
+//    fun refresh() {
+//        viewModelScope.launch {
+//            cities.value = cityRepository.getAllCities()
+//        }
+//    }
 
     fun insert(city: City) {
         viewModelScope.launch {
             cityRepository.insert(city)
+            Log.d(TAG, "CityViewModel::insert triggered")
         }
     }
 
     fun remove(city: City) {
         viewModelScope.launch {
             cityRepository.delete(city)
+            Log.d(TAG, "CityViewModel::remove triggered")
         }
     }
 }

@@ -98,22 +98,21 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.sr_CitiesList)
         swipeRefreshLayout?.setOnRefreshListener {
-            cityViewModel.refresh()
+//            cityViewModel.refresh()
             Log.d(TAG, "Refresh view")
             swipeRefreshLayout.isRefreshing = false
         }
-
 
         observeDatabase()
         observeWeatherViewModel()
 //        observePlacesViewModel()
 
-        cityViewModel.refresh()
+//        cityViewModel.refresh()
 
         val retryBtn = view?.findViewById<Button>(R.id.btn_retry)
         retryBtn?.setOnClickListener {
             Log.d(TAG, "Retry btn clicked")
-            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
+//            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
         }
 
         val addBtn = view?.findViewById<Button>(R.id.btn_add)
@@ -125,7 +124,17 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private fun observeWeatherViewModel() {
         citiesWeatherViewModel.testModel.observe(viewLifecycleOwner, Observer {
-            citiesWeatherListAdapter.updateCities(it)
+            if (true == it?.isEmpty()) {
+                // display text here that there is no cities added
+                citiesWeatherListAdapter.updateCities(listOf())
+                view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
+                view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
+            }
+            else {
+                citiesWeatherListAdapter.updateCities(it)
+                view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
+                view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
+            }
         })
 
         citiesWeatherViewModel.weatherLoadError.observe(viewLifecycleOwner, Observer { isError ->
@@ -134,6 +143,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
             if(isError) {
                 view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.VISIBLE
                 view?.findViewById<Button>(R.id.btn_add)?.visibility = View.GONE
+                view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
             }
         })
 
@@ -144,6 +154,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
                 if(isLoading) {
                     view?.findViewById<TextView>(R.id.tv_errorLoad)?.visibility = View.GONE
                     view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
+                    view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
                 }
             }
         })
@@ -175,8 +186,11 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private fun observeDatabase() {
         cityViewModel.cities.observe(viewLifecycleOwner, Observer {
-                citiesWeatherViewModel.refresh(it!!)
-                Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
+            val isNull = if (null == it ) "YES" else "NO"
+            Log.d(TAG, "Is it null? $isNull")
+            citiesWeatherViewModel.refresh(it!!)
+            Log.d(TAG, "CitiesMainWeatherFragment::observeDatabase triggered")
+            Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
         })
     }
 
