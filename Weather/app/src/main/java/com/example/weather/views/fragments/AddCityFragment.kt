@@ -1,5 +1,7 @@
 package com.example.weather.views.fragments
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -7,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -45,30 +48,37 @@ class AddCityFragment(private val databaseCommunicator: DatabaseCommunicator) : 
             communicator.popFragment(TAG)
         }
 
+        val addBtn = view.findViewById<Button>(R.id.btn_addCity)
+        addBtn.setOnClickListener {
+            val result = validator.checkInput(cityNameInput.text.toString())
+
+            if (result) {
+                databaseCommunicator.addCity(City(0, cityNameInput.text.toString()))
+                communicator.popFragment(TAG)
+            }
+            else {
+                Toast.makeText(context, "Wrong input!", Toast.LENGTH_LONG)
+            }
+        }
+
         cityNameInput = view.findViewById(R.id.etCityNameInput)
         cityNameInput.setOnEditorActionListener { _, keyCode, _ ->
-            when(keyCode) {
-                    KeyEvent.KEYCODE_ENDCALL -> {
-                        Log.d(TAG, "Entered: ${cityNameInput.text}")
-
-                        val result = validator.checkInput(cityNameInput.text.toString())
-
-                        if (result) {
-                            // send data somehow?
-                            databaseCommunicator.addCity(City(0, cityNameInput.text.toString()))
-                            // back to main fragment
-                            communicator.popFragment(TAG)
-                        }
-
-                        Toast.makeText(context, "Wrong input!", Toast.LENGTH_LONG)
-
-                        true
-                    }
-                else -> false
-                }
+            if (KeyEvent.KEYCODE_ENDCALL == keyCode) closeKeyboard(requireContext()) else false
+//            when(keyCode) {
+//                    KeyEvent.KEYCODE_ENDCALL -> {
+//                        closeKeyboard
+//                        true
+//                    }
+//                else -> false
+//                }
             }
 
         return view
     }
 
+    private fun closeKeyboard(context: Context): Boolean {
+        val inputMngr = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMngr.hideSoftInputFromWindow(view?.windowToken, 0)
+        return true
+    }
 }

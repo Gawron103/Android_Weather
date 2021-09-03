@@ -9,23 +9,23 @@ class InputValidator {
             result = checkIfSigns(input)
         }
 
+        if (!result) {
+            result = checkIfEmpty(input)
+        }
+
         return result
     }
 
     private fun checkIfNumbers(input: String): Boolean {
         return input.any { it.isDigit() }
-
-//        for (character in input) {
-//            if(character.isDigit()) {
-//                return true
-//            }
-//        }
-//
-//        return false
     }
 
     private fun checkIfSigns(input: String): Boolean {
         return input.all { it.isLetter() }
+    }
+
+    private fun checkIfEmpty(input: String): Boolean {
+        return input.isEmpty()
     }
 
 }

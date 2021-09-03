@@ -122,6 +122,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         }
     }
 
+
     private fun observeWeatherViewModel() {
         citiesWeatherViewModel.testModel.observe(viewLifecycleOwner, Observer {
             if (true == it?.isEmpty()) {
@@ -191,6 +192,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
             citiesWeatherViewModel.refresh(it!!)
             Log.d(TAG, "CitiesMainWeatherFragment::observeDatabase triggered")
             Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
+            Log.d(TAG, "DB: ${cityViewModel.cities.value}")
         })
     }
 
