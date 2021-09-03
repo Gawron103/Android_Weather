@@ -11,8 +11,7 @@ import com.example.weather.models.TestModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
-import com.example.weather.networking.PlacesRepository
-import com.example.weather.networking.WeatherRepository
+import com.example.weather.repositories.WeatherRepository
 import kotlinx.coroutines.*
 import retrofit2.Response
 

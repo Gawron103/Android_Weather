@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +19,7 @@ import com.example.weather.db.City
 import com.example.weather.db.CityDatabase
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
-import com.example.weather.networking.WeatherRepository
+import com.example.weather.repositories.WeatherRepository
 import com.example.weather.repositories.CityRepository
 import com.example.weather.viewmodels.*
 import com.example.weather.views.adapters.CitiesListAdapter

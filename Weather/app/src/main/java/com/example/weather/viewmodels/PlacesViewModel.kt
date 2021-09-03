@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
 import com.example.weather.models.places_model.PlacesModel
-import com.example.weather.networking.PlacesRepository
+import com.example.weather.repositories.PlacesRepository
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -48,10 +48,4 @@ class PlacesViewModel constructor(private val repository: PlacesRepository): Vie
         )
     }
 
-//    private suspend fun fetchPlacePhoto(placeRef: String): Response<PlacesModel> {
-//        return repository.getPlacePhoto(
-//            placeRef,
-//            API_KEY
-//        )
-//    }
 }

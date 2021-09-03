@@ -1,4 +1,7 @@
-package com.example.weather.networking
+package com.example.weather.repositories
+
+import com.example.weather.networking.PlacesApi
+import com.example.weather.networking.WeatherApi
 
 class WeatherRepository constructor(
     private val weatherService: WeatherApi,

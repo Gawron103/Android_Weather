@@ -1,6 +1,7 @@
-package com.example.weather.networking
+package com.example.weather.repositories
 
 import com.example.weather.models.places_model.PlacesModel
+import com.example.weather.networking.PlacesApi
 import retrofit2.Response
 
 class PlacesRepository constructor(private val placesService: PlacesApi) {
@@ -12,14 +13,5 @@ class PlacesRepository constructor(private val placesService: PlacesApi) {
             "photos",
             appKey)
     }
-
-//    suspend fun getPlacePhoto(placeRef: String, appKey: String): Response<PlacesModel> {
-//        return placesService.getPlaceImg(
-//            placeRef,
-//            400,
-//            400,
-//            appKey
-//        )
-//    }
 
 }

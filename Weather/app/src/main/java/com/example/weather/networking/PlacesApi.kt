@@ -17,14 +17,6 @@ interface PlacesApi {
         @Query("key") appKey: String
     ): Response<PlacesModel>
 
-//    @GET("/maps/api/place/photo")
-//    suspend fun getPlaceImg(
-//        @Query("photoreference") photoRef: String,
-//        @Query("maxwidth") maxWidth: Int,
-//        @Query("maxheight") maxHeight: Int,
-//        @Query("key") appKey: String
-//    ): Response<PlacesModel>
-
     companion object {
         private var placesService: PlacesApi? = null
         private const val BASE_URL = "https://maps.googleapis.com"
@@ -41,4 +33,5 @@ interface PlacesApi {
             return placesService!!
         }
     }
+
 }
