@@ -9,18 +9,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.R
-import com.example.weather.models.TestModel
+import com.example.weather.models.WeatherForCityModel
 import com.example.weather.models.current_weather_model.Daily
-import com.example.weather.models.current_weather_model.Weather
 import com.example.weather.utils.DateProvider
-import com.example.weather.views.interfaces.Communicator
 import kotlin.math.round
 
 class DetailedWeatherAdapter(
-    private var weatherData: TestModel
+    private var weatherData: WeatherForCityModel
 ): RecyclerView.Adapter<DetailedWeatherAdapter.DetailedWeatherViewHolder>() {
 
-    fun updateForecast(newForecast: TestModel) {
+    fun updateForecast(newForecast: WeatherForCityModel) {
         weatherData = newForecast
         notifyDataSetChanged()
     }

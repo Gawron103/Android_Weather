@@ -13,7 +13,7 @@ class CityViewModelFactory constructor(private val repository: CityRepository): 
                 CityViewModel(repository) as T
             }
             else -> {
-                throw IllegalArgumentException("View model not found")
+                throw IllegalArgumentException("City weather ViewModel not found")
             }
         }
     }

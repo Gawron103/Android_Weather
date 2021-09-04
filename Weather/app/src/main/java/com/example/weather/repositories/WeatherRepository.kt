@@ -14,7 +14,7 @@ class WeatherRepository constructor(
     suspend fun getWeather(lat: Double, lon: Double, exclude: String, units: String, appKey: String) =
         weatherService.getWeather(lat, lon, exclude, units, appKey)
 
-    suspend fun getPlaceId(placeName: String, appKey: String) =
+    suspend fun getPlaceId(placeName: String, appKey:String) =
         placesService.getPlaceId(placeName, "textquery", "photos", appKey)
 
 }

@@ -1,13 +1,10 @@
 package com.example.weather.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.weather.BuildConfig
 import com.example.weather.db.City
-import com.example.weather.models.TestModel
+import com.example.weather.models.WeatherForCityModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
@@ -17,97 +14,179 @@ import retrofit2.Response
 
 class WeatherSharedViewModel constructor(
     private val weatherRepository: WeatherRepository
-//    private val placesRepository: PlacesRepository
 ): ViewModel() {
 
     // Debug tag
     private val TAG = "WeatherSharedModel"
 
     // Model for city name
-    val location = MutableLiveData<LocationModel>()
+//    val location = MutableLiveData<LocationModel>()
 
     // Model for weather
-    val weather = MutableLiveData<WeatherModel>()
+//    val weather = MutableLiveData<WeatherModel>()
 
     // Model for places
-    val places = MutableLiveData<PlacesModel>()
+//    val places = MutableLiveData<PlacesModel>()
 
     // Says if there is an error when loading the data
     val weatherLoadError = MutableLiveData<Boolean>()
 
     // Says is the view model is in the process of loading the data
-    val loading = MutableLiveData<Boolean>()
+    val weatherLoading = MutableLiveData<Boolean>()
 
-    var testModel = MediatorLiveData<List<TestModel>>()
+    var citiesData = MutableLiveData<List<WeatherForCityModel>>()
 
     fun refresh(citiesName: List<City>){
-        if (citiesName.isNotEmpty()) {
-            viewModelScope.launch {
-                val testModels = mutableListOf<TestModel>()
+        viewModelScope.launch {
+            // loading data starts
+            weatherLoading.value = true
 
-                try {
-                    loading.value = true
+            if (citiesName.isNotEmpty()) {
+                var errorOccurred = false
 
-                    for (cityName in citiesName) {
-                        val locationResponse = fetchLocation(cityName.name)
+                val dataForCity = mutableListOf<WeatherForCityModel>()
 
-                        if (locationResponse.isSuccessful) {
-                            Log.d(TAG, "Location response: ${locationResponse.body()}")
+                var locationModel: LocationModel? = null
+                var weatherModel: WeatherModel? = null
+                var placesModel: PlacesModel? = null
 
-                            val lat = locationResponse.body()?.get(0)?.lat
-                            val lon = locationResponse.body()?.get(0)?.lon
+                for (city in citiesName) {
+                    // get geo coords for wanted city
+                    val locationResponse = fetchLocation(city.name)
 
-                            location.value = locationResponse.body()
-
-                            val weatherResponse = fetchWeather(lat!!, lon!!)
-
-                            if (weatherResponse.isSuccessful) {
-                                weather.value = weatherResponse.body()
-                                weatherLoadError.postValue(false)
-                                Log.d(TAG, "Weather response: ${weatherResponse.body()}")
-
-                                val placeRefResponse = fetchPlaceId(cityName.name)
-
-                                if (placeRefResponse.isSuccessful) {
-                                    places.value = placeRefResponse.body()
-
-                                    testModels.add(
-                                        TestModel(
-                                            cityName.id,
-                                            weather.value,
-                                            location.value,
-                                            places.value
-                                        )
-                                    )
-                                }
-
-//                        testModels.add(TestModel(weather.value, location.value))
-                            } else {
-                                weatherLoadError.postValue(true)
-                                Log.d(TAG, "Response failed")
-                                break
-                            }
-                        } else {
-                            weatherLoadError.postValue(true)
-                            break
-                        }
+                    if (locationResponse.isSuccessful) {
+                        locationModel = locationResponse.body()
+                    } else {
+                        // cannot get geo coords, error
+                        errorOccurred = true
+                        break
                     }
-                } catch (e: Exception) {
+
+                    // get weather data for wanted city
+                    val weatherResponse = fetchWeather(
+                        locationResponse.body()?.get(0)?.lat!!,
+                        locationResponse.body()?.get(0)?.lon!!
+                    )
+
+                    if (weatherResponse.isSuccessful) {
+                        weatherModel = weatherResponse.body()
+                    } else {
+                        // cannot get weather data
+                        errorOccurred = true
+                        break
+                    }
+
+                    // get reference to image of the city
+                    val placesResponse = fetchPlaceId(city.name)
+
+                    if (placesResponse.isSuccessful) {
+                        placesModel = placesResponse.body()
+                    } else {
+                        // cannot get reference for place image
+                        errorOccurred = true
+                        break
+                    }
+
+                    dataForCity.add(
+                        WeatherForCityModel(
+                            city.id,
+                            weatherModel,
+                            locationModel,
+                            placesModel
+                        )
+                    )
+                }
+
+                if (!errorOccurred) {
+                    weatherLoadError.value = false
+                    citiesData.value = dataForCity
+                } else {
                     weatherLoadError.value = true
+                    citiesData.value = listOf()
                 }
-
-                if (testModels.isNotEmpty()) {
-                    testModel.value = testModels
-                }
-
-                loading.value = false
+            } else {
+                citiesData.value = listOf()
+                weatherLoading.value = false
+                weatherLoadError.value = false
             }
+
+            // loading data ends
+            weatherLoading.value = false
         }
-        else {
-            testModel.value = listOf()
-            loading.value = false
-            weatherLoadError.value = false
-        }
+
+
+
+
+
+
+
+//        if (citiesName.isNotEmpty()) {
+//            viewModelScope.launch {
+//                val testModels = mutableListOf<WeatherForCityModel>()
+//
+//                try {
+//                    weatherLoading.value = true
+//
+//                    for (cityName in citiesName) {
+//                        val locationResponse = fetchLocation(cityName.name)
+//
+//                        if (locationResponse.isSuccessful) {
+//                            Log.d(TAG, "Location response: ${locationResponse.body()}")
+//
+//                            val lat = locationResponse.body()?.get(0)?.lat
+//                            val lon = locationResponse.body()?.get(0)?.lon
+//
+//                            location.value = locationResponse.body()
+//
+//                            val weatherResponse = fetchWeather(lat!!, lon!!)
+//
+//                            if (weatherResponse.isSuccessful) {
+//                                weather.value = weatherResponse.body()
+//                                weatherLoadError.postValue(false)
+//                                Log.d(TAG, "Weather response: ${weatherResponse.body()}")
+//
+//                                val placeRefResponse = fetchPlaceId(cityName.name)
+//
+//                                if (placeRefResponse.isSuccessful) {
+//                                    places.value = placeRefResponse.body()
+//
+//                                    testModels.add(
+//                                        WeatherForCityModel(
+//                                            cityName.id,
+//                                            weather.value,
+//                                            location.value,
+//                                            places.value
+//                                        )
+//                                    )
+//                                }
+//
+////                        testModels.add(TestModel(weather.value, location.value))
+//                            } else {
+//                                weatherLoadError.postValue(true)
+//                                Log.d(TAG, "Response failed")
+//                                break
+//                            }
+//                        } else {
+//                            weatherLoadError.postValue(true)
+//                            break
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    weatherLoadError.value = true
+//                }
+//
+//                if (testModels.isNotEmpty()) {
+//                    citiesData.value = testModels
+//                }
+//
+//                weatherLoading.value = false
+//            }
+//        }
+//        else {
+//            citiesData.value = listOf()
+//            weatherLoading.value = false
+//            weatherLoadError.value = false
+//        }
     }
 
     private suspend fun fetchWeather(lat: Double, lon: Double): Response<WeatherModel> {

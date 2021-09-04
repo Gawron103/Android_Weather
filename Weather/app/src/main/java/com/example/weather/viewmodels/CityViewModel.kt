@@ -13,16 +13,7 @@ class CityViewModel(private val cityRepository: CityRepository): ViewModel() {
 
     private val TAG = "CityViewModel"
 
-//    val cities = cityRepository.cities
-//    val cities = MutableLiveData<List<City>>()
-
     val cities = cityRepository.cities
-
-//    fun refresh() {
-//        viewModelScope.launch {
-//            cities.value = cityRepository.getAllCities()
-//        }
-//    }
 
     fun insert(city: City) {
         viewModelScope.launch {
@@ -37,4 +28,5 @@ class CityViewModel(private val cityRepository: CityRepository): ViewModel() {
             Log.d(TAG, "CityViewModel::remove triggered")
         }
     }
+
 }
