@@ -19,75 +19,45 @@ class WeatherSharedViewModel constructor(
     // Debug tag
     private val TAG = "WeatherSharedModel"
 
-    // Model for city name
-//    val location = MutableLiveData<LocationModel>()
-
-    // Model for weather
-//    val weather = MutableLiveData<WeatherModel>()
-
-    // Model for places
-//    val places = MutableLiveData<PlacesModel>()
-
     // Says if there is an error when loading the data
     val weatherLoadError = MutableLiveData<Boolean>()
 
     // Says is the view model is in the process of loading the data
     val weatherLoading = MutableLiveData<Boolean>()
 
-    var citiesData = MutableLiveData<List<WeatherForCityModel>>()
+    var citiesLiveData = MutableLiveData<MutableList<WeatherForCityModel>>()
 
-    fun refresh(citiesName: List<City>){
+    private var citiesLists = mutableListOf<WeatherForCityModel>()
+
+    fun refresh(citiesNames: List<City>) {
         viewModelScope.launch {
-            // loading data starts
             weatherLoading.value = true
 
-            if (citiesName.isNotEmpty()) {
-                var errorOccurred = false
+            citiesLists.clear()
 
-                val dataForCity = mutableListOf<WeatherForCityModel>()
+            var eccorOccured = false
 
+            for (city in citiesNames) {
                 var locationModel: LocationModel? = null
                 var weatherModel: WeatherModel? = null
                 var placesModel: PlacesModel? = null
 
-                for (city in citiesName) {
-                    // get geo coords for wanted city
-                    val locationResponse = fetchLocation(city.name)
+                locationModel = getLocationForCity(city.name)
 
-                    if (locationResponse.isSuccessful) {
-                        locationModel = locationResponse.body()
-                    } else {
-                        // cannot get geo coords, error
-                        errorOccurred = true
-                        break
-                    }
+                if (null != locationModel) {
+                    weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
+                } else {
+                    eccorOccured = true
+                }
 
-                    // get weather data for wanted city
-                    val weatherResponse = fetchWeather(
-                        locationResponse.body()?.get(0)?.lat!!,
-                        locationResponse.body()?.get(0)?.lon!!
-                    )
+                if (null != weatherModel) {
+                    placesModel = getPlaceIdForCity(city.name)
+                } else {
+                    eccorOccured = true
+                }
 
-                    if (weatherResponse.isSuccessful) {
-                        weatherModel = weatherResponse.body()
-                    } else {
-                        // cannot get weather data
-                        errorOccurred = true
-                        break
-                    }
-
-                    // get reference to image of the city
-                    val placesResponse = fetchPlaceId(city.name)
-
-                    if (placesResponse.isSuccessful) {
-                        placesModel = placesResponse.body()
-                    } else {
-                        // cannot get reference for place image
-                        errorOccurred = true
-                        break
-                    }
-
-                    dataForCity.add(
+                if (null != placesModel) {
+                    citiesLists.add(
                         WeatherForCityModel(
                             city.id,
                             weatherModel,
@@ -95,98 +65,78 @@ class WeatherSharedViewModel constructor(
                             placesModel
                         )
                     )
-                }
-
-                if (!errorOccurred) {
-                    weatherLoadError.value = false
-                    citiesData.value = dataForCity
+                    Log.d(TAG, "city added in weathersharedviewmodel")
                 } else {
-                    weatherLoadError.value = true
-                    citiesData.value = listOf()
+                    eccorOccured = true
                 }
-            } else {
-                citiesData.value = listOf()
-                weatherLoading.value = false
+            }
+
+            if (!eccorOccured) {
+                citiesLiveData.value = citiesLists
                 weatherLoadError.value = false
             }
 
-            // loading data ends
             weatherLoading.value = false
         }
+    }
 
+    fun addCity(city: City) {
+        viewModelScope.launch {
+            var locationModel: LocationModel? = null
+            var weatherModel: WeatherModel? = null
+            var placesModel: PlacesModel? = null
 
+            locationModel = getLocationForCity(city.name)
 
+            if (null != locationModel) {
+                weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
+            }
 
+            if (null != weatherModel) {
+                placesModel = getPlaceIdForCity(city.name)
+            }
 
+            if (null != placesModel) {
+                citiesLists.add(
+                    WeatherForCityModel(
+                        city.id,
+                        weatherModel,
+                        locationModel,
+                        placesModel
+                    )
+                )
+                Log.d(TAG, "city added in weathersharedviewmodel")
 
+                citiesLiveData.value = citiesLists
+            }
+        }
+    }
 
-//        if (citiesName.isNotEmpty()) {
-//            viewModelScope.launch {
-//                val testModels = mutableListOf<WeatherForCityModel>()
-//
-//                try {
-//                    weatherLoading.value = true
-//
-//                    for (cityName in citiesName) {
-//                        val locationResponse = fetchLocation(cityName.name)
-//
-//                        if (locationResponse.isSuccessful) {
-//                            Log.d(TAG, "Location response: ${locationResponse.body()}")
-//
-//                            val lat = locationResponse.body()?.get(0)?.lat
-//                            val lon = locationResponse.body()?.get(0)?.lon
-//
-//                            location.value = locationResponse.body()
-//
-//                            val weatherResponse = fetchWeather(lat!!, lon!!)
-//
-//                            if (weatherResponse.isSuccessful) {
-//                                weather.value = weatherResponse.body()
-//                                weatherLoadError.postValue(false)
-//                                Log.d(TAG, "Weather response: ${weatherResponse.body()}")
-//
-//                                val placeRefResponse = fetchPlaceId(cityName.name)
-//
-//                                if (placeRefResponse.isSuccessful) {
-//                                    places.value = placeRefResponse.body()
-//
-//                                    testModels.add(
-//                                        WeatherForCityModel(
-//                                            cityName.id,
-//                                            weather.value,
-//                                            location.value,
-//                                            places.value
-//                                        )
-//                                    )
-//                                }
-//
-////                        testModels.add(TestModel(weather.value, location.value))
-//                            } else {
-//                                weatherLoadError.postValue(true)
-//                                Log.d(TAG, "Response failed")
-//                                break
-//                            }
-//                        } else {
-//                            weatherLoadError.postValue(true)
-//                            break
-//                        }
-//                    }
-//                } catch (e: Exception) {
-//                    weatherLoadError.value = true
-//                }
-//
-//                if (testModels.isNotEmpty()) {
-//                    citiesData.value = testModels
-//                }
-//
-//                weatherLoading.value = false
-//            }
-//        }
-//        else {
-//            citiesData.value = listOf()
-//            weatherLoading.value = false
-//            weatherLoadError.value = false
-//        }
+    private suspend fun getLocationForCity(name: String): LocationModel? {
+        val locationResponse = fetchLocation(name)
+
+        return when (locationResponse.isSuccessful) {
+            true -> locationResponse.body()
+            false -> null
+        }
+    }
+
+    private suspend fun getWeatherForCity(lat: Double, lon: Double): WeatherModel? {
+        val weatherResponse = fetchWeather(lat, lon)
+
+        return when (weatherResponse.isSuccessful) {
+            true -> weatherResponse.body()
+            false -> null
+        }
+    }
+
+    private suspend fun getPlaceIdForCity(name: String): PlacesModel? {
+        val placesResponse = fetchPlaceId(name)
+
+        return when (placesResponse.isSuccessful) {
+            true -> placesResponse.body()
+            false -> null
+        }
     }
 
     private suspend fun fetchWeather(lat: Double, lon: Double): Response<WeatherModel> {
@@ -212,4 +162,5 @@ class WeatherSharedViewModel constructor(
             BuildConfig.PLACES_API_KEY
         )
     }
+
 }

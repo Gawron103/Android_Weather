@@ -30,7 +30,6 @@ import com.example.weather.views.interfaces.DatabaseCommunicator
 class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private lateinit var communicator: Communicator
-//    private lateinit var placesViewModel: PlacesViewModel
     private lateinit var cityViewModel: CityViewModel
     private lateinit var citiesWeatherViewModel: WeatherSharedViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
@@ -85,6 +84,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.sr_CitiesList)
         swipeRefreshLayout?.setOnRefreshListener {
             Log.d(TAG, "Refresh view")
+            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
             swipeRefreshLayout.isRefreshing = false
         }
 
@@ -105,14 +105,16 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
     }
 
     private fun observeWeatherViewModel() {
-        citiesWeatherViewModel.citiesData.observe(viewLifecycleOwner, Observer {
+        citiesWeatherViewModel.citiesLiveData.observe(viewLifecycleOwner, Observer {
             if (true == it?.isEmpty()) {
+                Log.d(TAG, "List is empty")
                 // display text here that there is no cities added
                 citiesWeatherListAdapter.updateCities(listOf())
                 view?.findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
                 view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
             }
             else {
+                Log.d(TAG, "Something is in list")
                 citiesWeatherListAdapter.updateCities(it)
 //                placesViewModel.refresh()
                 view?.findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
@@ -145,16 +147,19 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private fun observeDatabase() {
         cityViewModel.cities.observe(viewLifecycleOwner, Observer {
-            val isNull = if (null == it ) "YES" else "NO"
-            Log.d(TAG, "Is it null? $isNull")
-            citiesWeatherViewModel.refresh(it!!)
-            Log.d(TAG, "CitiesMainWeatherFragment::observeDatabase triggered")
-            Log.d(TAG, "Cities in db: ${cityViewModel.cities.value!!.size}")
-            Log.d(TAG, "DB: ${cityViewModel.cities.value}")
+            if (it.isEmpty()) {
+                Log.d(TAG, "Database is empty")
+                citiesWeatherViewModel.refresh(listOf())
+            }
+            else {
+                Log.d(TAG, "Database is not empty. It has ${it.size} items")
+                citiesWeatherViewModel.refresh(it!!)
+            }
         })
     }
 
     override fun addCity(city: City) {
+        citiesWeatherViewModel.addCity(city)
         cityViewModel.insert(city)
     }
 
