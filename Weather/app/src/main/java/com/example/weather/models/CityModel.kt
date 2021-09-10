@@ -14,4 +14,4 @@ data class CityModel(
 
     val placesModel: PlacesModel?
 
-    )
+)
