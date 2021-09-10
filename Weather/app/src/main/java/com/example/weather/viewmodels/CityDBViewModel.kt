@@ -9,7 +9,7 @@
 //import kotlinx.coroutines.Dispatchers
 //import kotlinx.coroutines.launch
 //
-//class CityDBViewModel(private val cityRepository: CityRepository): ViewModel() {
+//class CityViewModel(private val cityRepository: CityRepository): ViewModel() {
 //
 //    private val TAG = "CityViewModel"
 //
