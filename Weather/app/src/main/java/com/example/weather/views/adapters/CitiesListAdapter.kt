@@ -13,20 +13,20 @@ import com.bumptech.glide.Glide
 import com.example.weather.BuildConfig
 import com.example.weather.R
 import com.example.weather.db.City
-import com.example.weather.models.WeatherForCityModel
+import com.example.weather.models.CityModel
 import com.example.weather.views.fragments.DetailedWeatherFragment
 import com.example.weather.views.interfaces.Communicator
 import com.example.weather.views.interfaces.DatabaseCommunicator
 import kotlin.math.round
 
 class CitiesListAdapter(
-    private var citiesList: ArrayList<WeatherForCityModel>,
+    private var citiesList: ArrayList<CityModel>,
     private val communicator: Communicator,
     private val databaseCommunicator: DatabaseCommunicator
 ):
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>() {
 
-    fun updateCities(newCities: List<WeatherForCityModel>) {
+    fun updateCities(newCities: List<CityModel>) {
         citiesList.clear()
         citiesList.addAll(newCities)
         notifyDataSetChanged()
@@ -56,7 +56,7 @@ class CitiesListAdapter(
         private val maxTempVal = view.findViewById<TextView>(R.id.tv_maxTemp)
         private val deleteBtn = view.findViewById<Button>(R.id.btn_deleteCity)
 
-        fun bind(modelForLocation: WeatherForCityModel) {
+        fun bind(modelForLocation: CityModel) {
             Glide.with(context).load(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${modelForLocation.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(cityImg)

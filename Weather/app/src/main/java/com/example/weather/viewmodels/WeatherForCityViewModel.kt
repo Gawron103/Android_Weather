@@ -1,18 +1,22 @@
 package com.example.weather.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
 import com.example.weather.db.City
-import com.example.weather.models.WeatherForCityModel
+import com.example.weather.models.CityModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
 import com.example.weather.repositories.WeatherRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class WeatherSharedViewModel constructor(
+class WeatherForCityViewModel constructor(
     private val weatherRepository: WeatherRepository
 ): ViewModel() {
 
@@ -25,19 +29,32 @@ class WeatherSharedViewModel constructor(
     // Says is the view model is in the process of loading the data
     val weatherLoading = MutableLiveData<Boolean>()
 
-    var citiesLiveData = MutableLiveData<MutableList<WeatherForCityModel>>()
+    var citiesLiveData = MutableLiveData<MutableList<CityModel>>()
 
-    private var citiesLists = mutableListOf<WeatherForCityModel>()
+    private var citiesLists = mutableListOf<CityModel>()
 
-    fun refresh(citiesNames: List<City>) {
+    init {
+        Log.d(TAG, "Init called")
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
+            Log.d(TAG, "refresh triggered")
             weatherLoading.value = true
 
             citiesLists.clear()
+            Log.d(TAG, "citiesList clear")
 
             var eccorOccured = false
 
-            for (city in citiesNames) {
+            val cities = withContext(Dispatchers.IO) {
+                weatherRepository.getAllCities()
+            }
+
+            Log.d(TAG, "Number of cities in DB: ${cities.size}")
+
+            for (city in cities) {
                 var locationModel: LocationModel? = null
                 var weatherModel: WeatherModel? = null
                 var placesModel: PlacesModel? = null
@@ -58,7 +75,7 @@ class WeatherSharedViewModel constructor(
 
                 if (null != placesModel) {
                     citiesLists.add(
-                        WeatherForCityModel(
+                        CityModel(
                             city.id,
                             weatherModel,
                             locationModel,
@@ -72,8 +89,12 @@ class WeatherSharedViewModel constructor(
             }
 
             if (!eccorOccured) {
+                Log.d(TAG, "error not occured")
                 citiesLiveData.value = citiesLists
                 weatherLoadError.value = false
+            }
+            else {
+                weatherLoadError.value = true
             }
 
             weatherLoading.value = false
@@ -82,9 +103,14 @@ class WeatherSharedViewModel constructor(
 
     fun addCity(city: City) {
         viewModelScope.launch {
+            Log.d(TAG, "addCity triggered")
+//            weatherLoading.value = true
+
             var locationModel: LocationModel? = null
             var weatherModel: WeatherModel? = null
             var placesModel: PlacesModel? = null
+
+            val citiesList = citiesLists
 
             locationModel = getLocationForCity(city.name)
 
@@ -97,18 +123,33 @@ class WeatherSharedViewModel constructor(
             }
 
             if (null != placesModel) {
-                citiesLists.add(
-                    WeatherForCityModel(
+                citiesList.add(
+                    CityModel(
                         city.id,
                         weatherModel,
                         locationModel,
                         placesModel
                     )
                 )
-                Log.d(TAG, "city added in weathersharedviewmodel")
 
+                Log.d(TAG, "city add was successfully")
+
+                citiesLists = citiesList
                 citiesLiveData.value = citiesLists
+
+                Log.d(TAG, "city has been added to the DB")
+                weatherRepository.insertToDb(city)
             }
+
+//            weatherLoading.value = false
+        }
+    }
+
+    fun removeCity(city: City) {
+        viewModelScope.launch {
+            weatherRepository.deleteFromDb(city)
+            citiesLists.removeIf { it.locationModel?.get(0)?.cityName == city.name }
+            citiesLiveData.value = citiesLists
         }
     }
 

@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.R
-import com.example.weather.models.WeatherForCityModel
+import com.example.weather.models.CityModel
 import com.example.weather.views.adapters.DetailedWeatherAdapter
 import com.example.weather.views.interfaces.Communicator
 import kotlin.math.round
 
-class DetailedWeatherFragment(private val data: WeatherForCityModel) : Fragment() {
+class DetailedWeatherFragment(private val data: CityModel) : Fragment() {
 
     private lateinit var communicator: Communicator
     private lateinit var detailedWeatherAdapter: DetailedWeatherAdapter
