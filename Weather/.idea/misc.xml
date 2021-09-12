@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/delete_icon.xml" value="0.13645833333333332" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25455927051671734" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.29030797101449274" />
         <entry key="app/src/main/res/layout/change_location_fragment.xml" value="0.20108695652173914" />

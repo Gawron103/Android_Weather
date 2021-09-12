@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,20 +29,13 @@ import com.example.weather.views.interfaces.DatabaseCommunicator
 class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
     private lateinit var communicator: Communicator
+    private val addCityViewModel: AddCityViewModel by activityViewModels()
     private lateinit var citiesWeatherViewModel: WeatherForCityViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
 
     companion object {
         val TAG = CitiesMainWeatherFragment::class.java.simpleName
         var callCounter = 0
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -87,10 +81,11 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         val addBtn = view?.findViewById<Button>(R.id.btn_add)
         addBtn?.setOnClickListener {
             Log.d(TAG, "Add btn clicked")
-            communicator.pushFragment(AddCityFragment(this), AddCityFragment.TAG)
+            communicator.pushFragment(AddCityFragment(), AddCityFragment.TAG)
         }
 
         observeWeatherViewModel()
+        observeAddCityName()
     }
 
     private fun observeWeatherViewModel() {
@@ -136,6 +131,15 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         })
     }
 
+    private fun observeAddCityName() {
+        addCityViewModel.cityName.observe(viewLifecycleOwner, Observer { name ->
+            Log.d(TAG, "New city to add: $name")
+            if (name.isNotEmpty()) {
+                citiesWeatherViewModel.addCity(City(0, name))
+            }
+        })
+    }
+
     override fun addCity(city: City) {
         citiesWeatherViewModel.addCity(city)
     }
@@ -143,4 +147,5 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
     override fun deleteCity(city: City) {
         citiesWeatherViewModel.removeCity(city)
     }
+
 }

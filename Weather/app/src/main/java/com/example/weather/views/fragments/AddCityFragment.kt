@@ -13,17 +13,20 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import com.example.weather.R
 import com.example.weather.db.City
 import com.example.weather.utils.InputValidator
+import com.example.weather.viewmodels.AddCityViewModel
 import com.example.weather.views.interfaces.Communicator
 import com.example.weather.views.interfaces.DatabaseCommunicator
 
-class AddCityFragment(private val databaseCommunicator: DatabaseCommunicator) : Fragment() {
+class AddCityFragment : Fragment() {
 
     private lateinit var cityNameInput: EditText
     private lateinit var communicator: Communicator
     private lateinit var validator: InputValidator
+    private val addCityViewModel: AddCityViewModel by activityViewModels()
 
     companion object {
         val TAG = DetailedWeatherFragment::class.java.simpleName
@@ -37,7 +40,6 @@ class AddCityFragment(private val databaseCommunicator: DatabaseCommunicator) : 
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.change_location_fragment, container, false)
 
         communicator = requireActivity() as Communicator
@@ -53,7 +55,7 @@ class AddCityFragment(private val databaseCommunicator: DatabaseCommunicator) : 
             val result = validator.checkInput(cityNameInput.text.toString())
 
             if (result) {
-                databaseCommunicator.addCity(City(0, cityNameInput.text.toString()))
+                addCityViewModel.setCityName(cityNameInput.text.toString())
                 communicator.popFragment(TAG)
             }
             else {
@@ -64,14 +66,7 @@ class AddCityFragment(private val databaseCommunicator: DatabaseCommunicator) : 
         cityNameInput = view.findViewById(R.id.etCityNameInput)
         cityNameInput.setOnEditorActionListener { _, keyCode, _ ->
             if (KeyEvent.KEYCODE_ENDCALL == keyCode) closeKeyboard(requireContext()) else false
-//            when(keyCode) {
-//                    KeyEvent.KEYCODE_ENDCALL -> {
-//                        closeKeyboard
-//                        true
-//                    }
-//                else -> false
-//                }
-            }
+        }
 
         return view
     }

@@ -255,9 +255,11 @@
             android:id="@+id/btn_deleteCity"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/trash_icon"
+            android:background="@drawable/delete_icon"
+            android:shadowColor="#000000"
+            android:shadowRadius="10"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
