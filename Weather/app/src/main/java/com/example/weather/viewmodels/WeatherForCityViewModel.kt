@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
 import com.example.weather.db.City
 import com.example.weather.models.CityModel
+import com.example.weather.models.coords_model.CoordsModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
@@ -145,6 +146,37 @@ class WeatherForCityViewModel constructor(
         }
     }
 
+    fun addCurrentCity(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            var locationModel: LocationModel? = null
+            var weatherModel: WeatherModel? = null
+            var placesModel: PlacesModel? = null
+
+            locationModel = getNameForLocation(lat, lon)
+
+            if (null != locationModel) {
+                weatherModel = getWeatherForCity(lat, lon)
+            }
+
+            if (null != weatherModel) {
+                placesModel = getPlaceIdForCity(locationModel?.get(0)?.cityName!!)
+            }
+
+            if (null != placesModel) {
+                val currentLocation = CityModel(
+                    0,
+                    weatherModel,
+                    locationModel,
+                    placesModel
+                )
+
+                Log.d(TAG, "Weather for current city fetched successfully")
+
+                citiesLists.add(0, currentLocation)
+            }
+        }
+    }
+
     fun removeCity(city: City) {
         viewModelScope.launch {
             weatherRepository.deleteFromDb(city)
@@ -158,6 +190,15 @@ class WeatherForCityViewModel constructor(
 
         return when (locationResponse.isSuccessful) {
             true -> locationResponse.body()
+            false -> null
+        }
+    }
+
+    private suspend fun getNameForLocation(lat: Double, lon: Double): LocationModel? {
+        val coordsResponse = fetchName(lat, lon)
+
+        return when (coordsResponse.isSuccessful) {
+            true -> coordsResponse.body()
             false -> null
         }
     }
@@ -193,6 +234,14 @@ class WeatherForCityViewModel constructor(
     private suspend fun fetchLocation(city: String): Response<LocationModel> {
         return weatherRepository.getCoordinates(
             city,
+            BuildConfig.WEATHER_API_KEY
+        )
+    }
+
+    private suspend fun fetchName(lat: Double, lon: Double): Response<LocationModel> {
+        return weatherRepository.getNameForLocation(
+            lat,
+            lon,
             BuildConfig.WEATHER_API_KEY
         )
     }

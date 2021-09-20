@@ -38,7 +38,7 @@ class CitiesListAdapter(
     )
 
     override fun onBindViewHolder(holder: CitiesListViewHolder, position: Int) {
-        holder.bind(citiesList[position])
+        holder.bind(citiesList[position], position)
     }
 
     override fun getItemCount(): Int = citiesList.size
@@ -55,11 +55,17 @@ class CitiesListAdapter(
         private val minTempVal = view.findViewById<TextView>(R.id.tv_minTemp)
         private val maxTempVal = view.findViewById<TextView>(R.id.tv_maxTemp)
         private val deleteBtn = view.findViewById<Button>(R.id.btn_deleteCity)
+        private val localizationIcon = view.findViewById<ImageView>(R.id.iv_localizationIcon)
 
-        fun bind(modelForLocation: CityModel) {
+        fun bind(modelForLocation: CityModel, position: Int) {
+            Log.d(TAG, "Position: ${position}, name: ${modelForLocation.locationModel?.get(0)?.cityName}")
             Glide.with(context).load(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${modelForLocation.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(cityImg)
+
+            if (position != 0) {
+                localizationIcon.visibility = View.GONE
+            }
 
             cityName.text = modelForLocation.locationModel?.get(0)?.cityName
             countryCode.text = modelForLocation.locationModel?.get(0)?.countryCode

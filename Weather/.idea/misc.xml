@@ -3,24 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/drawable/delete_icon.xml" value="0.13645833333333332" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25455927051671734" />
-        <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.29030797101449274" />
-        <entry key="app/src/main/res/layout/change_location_fragment.xml" value="0.20108695652173914" />
-        <entry key="app/src/main/res/layout/cities_list_fragment.xml" value="0.5234375" />
-        <entry key="app/src/main/res/layout/city_short_weather_item.xml" value="0.5234375" />
-        <entry key="app/src/main/res/layout/current_weather_fragment.xml" value="0.5239583333333333" />
-        <entry key="app/src/main/res/layout/forecast_fragment.xml" value="0.2346014492753623" />
-        <entry key="app/src/main/res/layout/fragment_cities_main_weather.xml" value="0.25455927051671734" />
-        <entry key="app/src/main/res/layout/fragment_detailed_weather.xml" value="0.5" />
-        <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/item_current_weather.xml" value="0.2346014492753623" />
-        <entry key="app/src/main/res/layout/item_forecast.xml" value="0.55" />
-        <entry key="app/src/main/res/layout/item_predicted_weather.xml" value="0.5" />
-        <entry key="app/src/main/res/layout/nav_header.xml" value="0.20108695652173914" />
+        <entry key="app/src/main/res/layout/fragment_permissions.xml" value="0.22282608695652173" />
+        <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.5" />
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

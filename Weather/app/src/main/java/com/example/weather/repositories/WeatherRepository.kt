@@ -15,6 +15,9 @@ class WeatherRepository constructor(
     suspend fun getCoordinates(cityName: String, appKey: String) =
         weatherService.getCoordinates(cityName, appKey)
 
+    suspend fun getNameForLocation(lat: Double, lon: Double, appKey: String) =
+        weatherService.getNameForLocation(lat, lon, appKey)
+
     suspend fun getWeather(lat: Double, lon: Double, exclude: String, units: String, appKey: String) =
         weatherService.getWeather(lat, lon, exclude, units, appKey)
 

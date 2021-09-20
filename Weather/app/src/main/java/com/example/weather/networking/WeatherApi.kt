@@ -1,5 +1,6 @@
 package com.example.weather.networking
 
+import com.example.weather.models.coords_model.CoordsModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import retrofit2.Response
@@ -22,6 +23,13 @@ interface WeatherApi {
     @GET("/geo/1.0/direct")
     suspend fun getCoordinates(
         @Query("q") cityName: String,
+        @Query("appid") appKey: String
+    ): Response<LocationModel>
+
+    @GET("geo/1.0/reverse")
+    suspend fun getNameForLocation(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
         @Query("appid") appKey: String
     ): Response<LocationModel>
 

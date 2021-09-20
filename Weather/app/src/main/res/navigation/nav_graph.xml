@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/citiesMainWeatherFragment2">
+    app:startDestination="@id/permissionsFragment">
     <fragment
         android:id="@+id/citiesMainWeatherFragment2"
         android:name="com.example.weather.views.fragments.CitiesMainWeatherFragment"
@@ -21,4 +21,9 @@
 <!--            android:id="@+id/navigateToCitiesMainWeatherFragment2"-->
 <!--            app:destination="@id/citiesMainWeatherFragment2" />-->
     </fragment>
+    <fragment
+        android:id="@+id/permissionsFragment"
+        android:name="com.example.weather.views.fragments.PermissionsFragment"
+        android:label="fragment_permissions"
+        tools:layout="@layout/fragment_permissions" />
 </navigation>
