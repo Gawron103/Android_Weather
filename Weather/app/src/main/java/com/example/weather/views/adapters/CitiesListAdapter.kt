@@ -14,6 +14,7 @@ import com.example.weather.BuildConfig
 import com.example.weather.R
 import com.example.weather.db.City
 import com.example.weather.models.CityModel
+import com.example.weather.utils.Const
 import com.example.weather.views.fragments.DetailedWeatherFragment
 import com.example.weather.views.interfaces.Communicator
 import com.example.weather.views.interfaces.DatabaseCommunicator
@@ -63,9 +64,7 @@ class CitiesListAdapter(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${modelForLocation.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(cityImg)
 
-            if (position != 0) {
-                localizationIcon.visibility = View.GONE
-            }
+            if (Const.CURRENT_LOCATION_POSITION == position) deleteBtn.visibility = View.GONE else localizationIcon.visibility = View.GONE
 
             cityName.text = modelForLocation.locationModel?.get(0)?.cityName
             countryCode.text = modelForLocation.locationModel?.get(0)?.countryCode

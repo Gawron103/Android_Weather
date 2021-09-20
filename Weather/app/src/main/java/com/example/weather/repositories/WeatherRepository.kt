@@ -1,6 +1,5 @@
 package com.example.weather.repositories
 
-import androidx.lifecycle.LiveData
 import com.example.weather.db.City
 import com.example.weather.db.CityDAO
 import com.example.weather.networking.PlacesApi

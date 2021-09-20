@@ -139,6 +139,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         citiesWeatherViewModel.weatherLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             isLoading?.let {
                 view?.findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isLoading) View.VISIBLE else View.GONE
+                view?.findViewById<Button>(R.id.btn_add)?.visibility = if (isLoading) View.GONE else View.VISIBLE
 
                 if(isLoading) {
                     view?.findViewById<TextView>(R.id.tv_errorLoad)?.visibility = View.GONE
@@ -176,7 +177,6 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
 
                 if (null == location) {
                     requestNewLocationData()
-//                    citiesWeatherViewModel.addCurrentCity()
                 }
                 else {
                     Log.d(TAG, "GettingCoordsForCurrentLocation Lat: ${location.latitude}")

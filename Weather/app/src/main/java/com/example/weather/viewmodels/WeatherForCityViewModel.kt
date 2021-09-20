@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
 import com.example.weather.db.City
 import com.example.weather.models.CityModel
-import com.example.weather.models.coords_model.CoordsModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
@@ -45,6 +44,7 @@ class WeatherForCityViewModel constructor(
             weatherLoading.value = true
 
             citiesLists.clear()
+            citiesLiveData.value?.clear()
             Log.d(TAG, "citiesList clear")
 
             var eccorOccured = false
@@ -56,11 +56,10 @@ class WeatherForCityViewModel constructor(
             Log.d(TAG, "Number of cities in DB: ${cities.size}")
 
             for (city in cities) {
-                var locationModel: LocationModel? = null
                 var weatherModel: WeatherModel? = null
                 var placesModel: PlacesModel? = null
 
-                locationModel = getLocationForCity(city.name)
+                var locationModel: LocationModel? = getLocationForCity(city.name)
 
                 if (null != locationModel) {
                     weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
@@ -105,15 +104,13 @@ class WeatherForCityViewModel constructor(
     fun addCity(city: City) {
         viewModelScope.launch {
             Log.d(TAG, "addCity triggered")
-//            weatherLoading.value = true
 
-            var locationModel: LocationModel? = null
             var weatherModel: WeatherModel? = null
             var placesModel: PlacesModel? = null
 
             val citiesList = citiesLists
 
-            locationModel = getLocationForCity(city.name)
+            var locationModel: LocationModel? = getLocationForCity(city.name)
 
             if (null != locationModel) {
                 weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
@@ -141,8 +138,6 @@ class WeatherForCityViewModel constructor(
                 Log.d(TAG, "city has been added to the DB")
                 weatherRepository.insertToDb(city)
             }
-
-//            weatherLoading.value = false
         }
     }
 
@@ -172,6 +167,7 @@ class WeatherForCityViewModel constructor(
 
                 Log.d(TAG, "Weather for current city fetched successfully")
 
+                // always add current localization as first item
                 citiesLists.add(0, currentLocation)
             }
         }

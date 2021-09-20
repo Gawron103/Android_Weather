@@ -1,6 +1,5 @@
 package com.example.weather.networking
 
-import com.example.weather.models.coords_model.CoordsModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import retrofit2.Response
@@ -35,7 +34,7 @@ interface WeatherApi {
 
     companion object {
         private var weatherService: WeatherApi? = null
-        private val BASE_URL = "http://api.openweathermap.org"
+        private const val BASE_URL = "http://api.openweathermap.org"
 
         fun getInstance(): WeatherApi {
             if(null == weatherService) {

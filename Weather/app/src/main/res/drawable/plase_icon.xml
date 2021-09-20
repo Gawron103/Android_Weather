@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="47.5dp"
+    android:height="47.5dp"
+    android:viewportWidth="47.5"
+    android:viewportHeight="47.5">
+  <group>
+    <clip-path
+        android:pathData="M0,0 L47.5,0 47.5,47.5 0,47.5 0,0Z"/>
+    <path
+        android:pathData="m38.75,28.75c-3.75,-0 -8.75,10 -8.75,12.5 0,3.75 2.5,5 2.5,5l13.75,-0 0,-12.5C46.25,33.75 41.25,28.75 38.75,28.75"
+        android:fillColor="#2a6797"/>
+    <path
+        android:pathData="m8.75,28.75c3.75,-0 8.75,10 8.75,12.5 0,3.75 -2.5,5 -2.5,5l-13.75,-0 0,-12.5c0,-0 5,-5 7.5,-5"
+        android:fillColor="#2a6797"/>
+    <path
+        android:pathData="M32.5,15C32.5,13.62 31.38,12.5 30,12.5 28.62,12.5 27.5,13.62 27.5,15l0,-9.0962c0.745,-0.4338 1.25,-1.2313 1.25,-2.1537 0,-1.38 -1.12,-2.5 -2.5,-2.5 -1.38,-0 -2.5,1.12 -2.5,2.5 0,-1.38 -1.12,-2.5 -2.5,-2.5 -1.38,-0 -2.5,1.12 -2.5,2.5 0,0.9225 0.5063,1.72 1.25,2.1537L20,15c0,-1.38 -1.12,-2.5 -2.5,-2.5 -1.38,-0 -2.5,1.12 -2.5,2.5l-1.25,14.4075 0,5.5925 6.25,-0 0,1.25 7.5,-0 0,-1.25 6.25,-0 0,-5.5925L32.5,15Z"
+        android:fillColor="#c1694f"/>
+    <path
+        android:pathData="m31.25,21.25 l-1.25,-15c0,-1.38 -1.12,-2.5 -2.5,-2.5 -1.38,-0 -2.5,1.12 -2.5,2.5l0,25c0,7.5 7.5,11.25 7.5,11.25 0,-0 7.5,-5 7.5,-11.25L31.25,21.25Z"
+        android:fillColor="#d79e84"/>
+    <path
+        android:pathData="m20,3.75c-1.38,-0 -2.5,1.12 -2.5,2.5l-1.25,15 -8.75,10c0,6.25 7.5,11.25 7.5,11.25 0,-0 7.5,-3.75 7.5,-11.25L22.5,6.25C22.5,4.87 21.38,3.75 20,3.75"
+        android:fillColor="#d79e84"/>
+    <path
+        android:pathData="M15,10 L7.5,6.25 6.25,8.75 13.75,11.25 15,10Z"
+        android:fillColor="#fdcb58"/>
+    <path
+        android:pathData="M32.5,10 L40,6.25 41.25,8.75 33.75,11.25 32.5,10Z"
+        android:fillColor="#fdcb58"/>
+    <path
+        android:pathData="m12.5,15 l-7.5,-1.25 -1.25,2.5 8.75,-0 0,-1.25z"
+        android:fillColor="#fdcb58"/>
+    <path
+        android:pathData="M35,15 L42.5,13.75 43.75,16.25 35,16.25 35,15Z"
+        android:fillColor="#fdcb58"/>
+  </group>
+</vector>

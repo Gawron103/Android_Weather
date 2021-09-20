@@ -3,7 +3,6 @@ package com.example.weather.views.fragments
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,11 +14,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.weather.R
-import com.example.weather.db.City
 import com.example.weather.utils.InputValidator
 import com.example.weather.viewmodels.AddCityViewModel
 import com.example.weather.views.interfaces.Communicator
-import com.example.weather.views.interfaces.DatabaseCommunicator
 
 class AddCityFragment : Fragment() {
 
@@ -40,7 +37,7 @@ class AddCityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view =  inflater.inflate(R.layout.change_location_fragment, container, false)
+        val view =  inflater.inflate(R.layout.fragment_add_city, container, false)
 
         communicator = requireActivity() as Communicator
         validator = InputValidator()

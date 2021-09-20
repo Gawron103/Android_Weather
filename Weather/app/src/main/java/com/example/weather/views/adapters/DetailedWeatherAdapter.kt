@@ -41,9 +41,7 @@ class DetailedWeatherAdapter(
         private val weatherIcon = view.findViewById<ImageView>(R.id.iv_weatherIcon)
 
         fun bind(weather: Daily) {
-            val provider = DateProvider()
-
-            dayName.text = provider.getDayName(weather?.currentTime!!)
+            dayName.text = DateProvider.getDayName(weather?.currentTime!!)
             temperature.text = round(weather?.tempInDay?.day!!).toString()
 
             Glide.with(context).load("https://openweathermap.org/img/wn/${weather?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(weatherIcon)

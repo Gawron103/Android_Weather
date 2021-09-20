@@ -1,6 +1,5 @@
 package com.example.weather.views
 
-import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.weather.R
+import com.example.weather.utils.Const
 import com.example.weather.utils.PermissionsChecker
 import com.example.weather.views.fragments.AddCityFragment
 import com.example.weather.views.fragments.CitiesMainWeatherFragment
@@ -34,17 +34,11 @@ class MainActivity : AppCompatActivity(), Communicator {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // move to separate file
-        val neededPermissions = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-
-        if(!PermissionsChecker.hasLocalizationPermissions(this, neededPermissions)) {
+        if(!PermissionsChecker.hasLocalizationPermissions(this, Const.neededPermissions)) {
             // permissions not granted
             Log.d(TAG, "PERMISSIONS NOT GRANTED")
 
-            permissionsRequesterLauncher.launch(neededPermissions)
+            permissionsRequesterLauncher.launch(Const.neededPermissions)
         }
         else {
             Log.d(TAG, "PERMISSIONS ALREADY GRANTED")

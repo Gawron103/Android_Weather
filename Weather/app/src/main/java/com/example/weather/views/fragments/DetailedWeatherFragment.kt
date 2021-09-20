@@ -48,7 +48,6 @@ class DetailedWeatherFragment(private val data: CityModel) : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        // maybe better pass here only weather data
         detailedWeatherAdapter = DetailedWeatherAdapter(data)
 
         val forecast = requireView().findViewById<RecyclerView>(R.id.rv_forecast).apply {
