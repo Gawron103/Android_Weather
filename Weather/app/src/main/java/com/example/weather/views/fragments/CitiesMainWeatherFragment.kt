@@ -67,7 +67,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService, cityDao)
 
-        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), communicator, this)
+//        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), communicator, this)
 
         citiesWeatherViewModel = ViewModelProvider(
             requireActivity(),
@@ -95,7 +95,7 @@ class CitiesMainWeatherFragment: Fragment(), DatabaseCommunicator {
         val addBtn = view?.findViewById<Button>(R.id.btn_add)
         addBtn?.setOnClickListener {
             Log.d(TAG, "Add btn clicked")
-            communicator.pushFragment(AddCityFragment(), AddCityFragment.TAG)
+//            communicator.pushFragment(AddCityFragment(), AddCityFragment.TAG)
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())

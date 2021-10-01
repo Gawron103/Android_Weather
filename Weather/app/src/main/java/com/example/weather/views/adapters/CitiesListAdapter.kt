@@ -1,6 +1,7 @@
 package com.example.weather.views.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,9 +22,7 @@ import com.example.weather.views.interfaces.DatabaseCommunicator
 import kotlin.math.round
 
 class CitiesListAdapter(
-    private var citiesList: ArrayList<CityModel>,
-    private val communicator: Communicator,
-    private val databaseCommunicator: DatabaseCommunicator
+    private var citiesList: ArrayList<CityModel>
 ):
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>() {
 
@@ -74,14 +73,16 @@ class CitiesListAdapter(
             maxTempVal.text = round(modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.max!!).toString()
 
             itemView.setOnClickListener {
-                communicator.pushFragment(DetailedWeatherFragment(modelForLocation), DetailedWeatherFragment.TAG)
+                val intent = Intent(context, DetailedWeatherFragment::class.java)
+//                communicator.pushFragment(DetailedWeatherFragment(modelForLocation), DetailedWeatherFragment.TAG)
                 Log.d(TAG, "${cityName.text} clicked")
+                context.startActivity(intent)
             }
 
             deleteBtn.setOnClickListener {
-                databaseCommunicator.deleteCity(
-                    City(modelForLocation.idInDb!!, modelForLocation.locationModel?.get(0)?.cityName!!)
-                )
+//                databaseCommunicator.deleteCity(
+//                    City(modelForLocation.idInDb!!, modelForLocation.locationModel?.get(0)?.cityName!!)
+//                )
                 Log.d(TAG, "Delete icon clicked")
                 Log.d(TAG, "Deteled ${modelForLocation.locationModel?.get(0)?.cityName!!} with id ${modelForLocation.idInDb!!}")
             }
