@@ -34,17 +34,6 @@ import com.google.android.gms.location.*
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
-//    private val permissionsRequesterLauncher =
-//        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-//            Log.d(TAG, "Permissions entries: ${permissions.entries}")
-//            val isGranted = permissions.entries.all {
-//                it.value == true
-//            }
-//
-//            if (isGranted) {
-//                pushFragment(CitiesMainWeatherFragment(), CitiesMainWeatherFragment.TAG)
-//            }
-//        }
 
     private lateinit var citiesWeatherViewModel: WeatherForCityViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
@@ -53,17 +42,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-//        if(!PermissionsChecker.hasLocalizationPermissions(this, Const.neededPermissions)) {
-//            // permissions not granted
-//            Log.d(TAG, "PERMISSIONS NOT GRANTED")
-//
-//            permissionsRequesterLauncher.launch(Const.neededPermissions)
-//        }
-//        else {
-//            Log.d(TAG, "PERMISSIONS ALREADY GRANTED")
-//            pushFragment(CitiesMainWeatherFragment(), CitiesMainWeatherFragment.TAG)
-//        }
 
         val cityDao = CityDatabase.getInstance(this).cityDAO
         val placesService = PlacesApi.getInstance()
