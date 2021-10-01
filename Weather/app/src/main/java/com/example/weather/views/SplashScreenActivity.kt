@@ -47,7 +47,7 @@ class SplashScreenActivity : AppCompatActivity() {
         splashScreenLayout.alpha = 0f
         splashScreenLayout.animate().setDuration(3000).alpha(1f).withEndAction {
             startActivity(Intent(this, activityName))
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             finish()
         }
     }

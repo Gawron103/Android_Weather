@@ -16,6 +16,7 @@ import com.example.weather.R
 import com.example.weather.db.City
 import com.example.weather.models.CityModel
 import com.example.weather.utils.Const
+import com.example.weather.views.DetailedWeatherActivity
 import com.example.weather.views.fragments.DetailedWeatherFragment
 import com.example.weather.views.interfaces.Communicator
 import com.example.weather.views.interfaces.DatabaseCommunicator
@@ -24,7 +25,13 @@ import kotlin.math.round
 class CitiesListAdapter(
     private var citiesList: ArrayList<CityModel>
 ):
-    RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>() {
+    RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>()
+    /* View.OnClickListener */
+{
+
+//    public interface mClickListener {
+//        public fun mClick(v: View, position: Int)
+//    }
 
     fun updateCities(newCities: List<CityModel>) {
         citiesList.clear()
@@ -73,8 +80,8 @@ class CitiesListAdapter(
             maxTempVal.text = round(modelForLocation.weatherModel?.dailyConditions?.get(0)?.tempInDay?.max!!).toString()
 
             itemView.setOnClickListener {
-                val intent = Intent(context, DetailedWeatherFragment::class.java)
-//                communicator.pushFragment(DetailedWeatherFragment(modelForLocation), DetailedWeatherFragment.TAG)
+                val intent = Intent(context, DetailedWeatherActivity::class.java)
+                intent.putExtra("model", modelForLocation)
                 Log.d(TAG, "${cityName.text} clicked")
                 context.startActivity(intent)
             }

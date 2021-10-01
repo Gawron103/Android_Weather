@@ -1,7 +1,10 @@
 package com.example.weather.models.location_model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Location(
 
     @SerializedName("name")
@@ -16,4 +19,4 @@ data class Location(
     @SerializedName("country")
     val countryCode: String?
 
-)
+): Parcelable

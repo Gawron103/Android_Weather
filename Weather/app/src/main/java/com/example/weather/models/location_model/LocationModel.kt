@@ -1,3 +1,7 @@
 package com.example.weather.models.location_model
 
-class LocationModel: ArrayList<Location>()
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+class LocationModel: ArrayList<Location>(), Parcelable

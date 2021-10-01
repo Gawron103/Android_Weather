@@ -31,7 +31,7 @@ import com.example.weather.views.adapters.CitiesListAdapter
 import com.example.weather.views.fragments.CitiesMainWeatherFragment
 import com.google.android.gms.location.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ {
 
     private val TAG = "MainActivity"
 
@@ -207,5 +207,9 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+//
+//    override fun mClick(v: View, position: Int) {
+//
+//    }
 
 }

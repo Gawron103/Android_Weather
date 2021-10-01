@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustResize">
         <activity
+            android:name=".views.DetailedWeatherActivity"
+            android:exported="true" />
+        <activity
             android:name=".views.NoPermissionsActivity"
             android:exported="true" />
         <activity
