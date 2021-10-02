@@ -27,8 +27,12 @@ class WeatherRepository constructor(
         dao.insertCity(city)
     }
 
-    suspend fun deleteFromDb(city: City) {
-        dao.deleteCity(city)
+//    suspend fun deleteFromDb(city: City) {
+//        dao.deleteCity(city)
+//    }
+
+    suspend fun deleteFromDb(cityName: Int) {
+        dao.deleteCity(cityName)
     }
 
     fun getAllCities(): List<City> {

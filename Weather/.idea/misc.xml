@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/layout/fragment_detailed_weather.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_permissions.xml" value="0.22282608695652173" />
         <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/item_predicted_weather.xml" value="0.25227963525835867" />
       </map>
     </option>
   </component>

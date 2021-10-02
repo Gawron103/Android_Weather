@@ -5,7 +5,7 @@
     android:id="@+id/cl_splashScreenLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.SplashScreenActivity">
+    tools:context=".views.activities.SplashScreenActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"

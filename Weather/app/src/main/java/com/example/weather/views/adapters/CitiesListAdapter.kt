@@ -13,24 +13,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.BuildConfig
 import com.example.weather.R
-import com.example.weather.db.City
 import com.example.weather.models.CityModel
 import com.example.weather.utils.Const
-import com.example.weather.views.DetailedWeatherActivity
-import com.example.weather.views.fragments.DetailedWeatherFragment
-import com.example.weather.views.interfaces.Communicator
-import com.example.weather.views.interfaces.DatabaseCommunicator
+import com.example.weather.views.activities.DetailedWeatherActivity
 import kotlin.math.round
 
 class CitiesListAdapter(
-    private var citiesList: ArrayList<CityModel>
+    private var citiesList: ArrayList<CityModel>,
+    private val onDeleteCallback: (CityModel) -> Unit
 ):
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>()
     /* View.OnClickListener */
 {
 
-//    public interface mClickListener {
-//        public fun mClick(v: View, position: Int)
+//    public interface OnItemClick {
+//        fun onClick(city: City, position: Int)
 //    }
 
     fun updateCities(newCities: List<CityModel>) {
@@ -89,6 +86,7 @@ class CitiesListAdapter(
             deleteBtn.setOnClickListener {
 //                databaseCommunicator.deleteCity(
 //                    City(modelForLocation.idInDb!!, modelForLocation.locationModel?.get(0)?.cityName!!)
+                onDeleteCallback(modelForLocation)
 //                )
                 Log.d(TAG, "Delete icon clicked")
                 Log.d(TAG, "Deteled ${modelForLocation.locationModel?.get(0)?.cityName!!} with id ${modelForLocation.idInDb!!}")

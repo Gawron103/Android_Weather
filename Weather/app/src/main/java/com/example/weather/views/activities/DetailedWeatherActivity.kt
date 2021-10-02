@@ -1,4 +1,4 @@
-package com.example.weather.views
+package com.example.weather.views.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.models.CityModel
 import com.example.weather.views.adapters.DetailedWeatherAdapter
-import com.example.weather.views.fragments.DetailedWeatherFragment
 import kotlin.math.round
 
 class DetailedWeatherActivity : AppCompatActivity() {

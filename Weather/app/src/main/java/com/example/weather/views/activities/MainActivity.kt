@@ -1,4 +1,4 @@
-package com.example.weather.views
+package com.example.weather.views.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -22,16 +22,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.weather.R
 import com.example.weather.db.City
 import com.example.weather.db.CityDatabase
+import com.example.weather.models.CityModel
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
 import com.example.weather.repositories.WeatherRepository
 import com.example.weather.viewmodels.WeatherForCityViewModel
 import com.example.weather.viewmodels.WeatherForCityViewModelFactory
 import com.example.weather.views.adapters.CitiesListAdapter
-import com.example.weather.views.fragments.CitiesMainWeatherFragment
 import com.google.android.gms.location.*
 
-class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ {
+class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService, cityDao)
 
-        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf())
+        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity)
 
         citiesWeatherViewModel = ViewModelProvider(
             this,
@@ -69,13 +69,13 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
 
         val retryBtn = findViewById<Button>(R.id.btn_retry)
         retryBtn?.setOnClickListener {
-            Log.d(CitiesMainWeatherFragment.TAG, "Retry btn clicked")
+//            Log.d(CitiesMainWeatherFragment.TAG, "Retry btn clicked")
 //            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
         }
 
         val addBtn = findViewById<Button>(R.id.btn_add)
         addBtn?.setOnClickListener {
-            Log.d(CitiesMainWeatherFragment.TAG, "Add btn clicked")
+//            Log.d(CitiesMainWeatherFragment.TAG, "Add btn clicked")
             val intent = Intent(this, AddCityActivity::class.java)
             startActivity(intent)
         }
@@ -99,17 +99,12 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
 
     private fun observeWeatherViewModel() {
         citiesWeatherViewModel.citiesLiveData.observe(this, Observer {
-            CitiesMainWeatherFragment.callCounter += 1
-            Log.d(CitiesMainWeatherFragment.TAG, "citiesLiveData observer triggered")
-            Log.d(CitiesMainWeatherFragment.TAG, "citiesLiveData has been triggered ${CitiesMainWeatherFragment.callCounter} times")
             if (true == it?.isEmpty()) {
-                Log.d(CitiesMainWeatherFragment.TAG, "List is empty")
                 // display text here that there is no cities added
                 citiesWeatherListAdapter.updateCities(listOf())
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
             }
             else {
-                Log.d(CitiesMainWeatherFragment.TAG, "Something is in list")
                 citiesWeatherListAdapter.updateCities(it)
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
             }
@@ -145,8 +140,9 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
         citiesWeatherViewModel.addCity(city)
     }
 
-    fun deleteCity(city: City) {
-        citiesWeatherViewModel.removeCity(city)
+    private fun deleteCity(cityModel: CityModel) {
+        Log.d(TAG, "Removing ${cityModel?.locationModel?.get(0)?.cityName!!}")
+        citiesWeatherViewModel.removeCity(cityModel)
     }
 
     private fun getCoordsForCurrentLocation() {
@@ -169,8 +165,8 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
                     requestNewLocationData()
                 }
                 else {
-                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lat: ${location.latitude}")
-                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lon: ${location.longitude}")
+//                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lat: ${location.latitude}")
+//                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lon: ${location.longitude}")
                     citiesWeatherViewModel.addCurrentCity(
                         location.latitude,
                         location.longitude
@@ -199,17 +195,13 @@ class MainActivity : AppCompatActivity() /*, CitiesListAdapter.mClickListener*/ 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             var lastLocation: Location = locationResult.lastLocation
-            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lat: ${lastLocation.latitude}")
-            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lon: ${lastLocation.longitude}")
+//            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lat: ${lastLocation.latitude}")
+//            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lon: ${lastLocation.longitude}")
             citiesWeatherViewModel.addCurrentCity(
                 lastLocation.latitude,
                 lastLocation.longitude
             )
         }
     }
-//
-//    override fun mClick(v: View, position: Int) {
-//
-//    }
 
 }

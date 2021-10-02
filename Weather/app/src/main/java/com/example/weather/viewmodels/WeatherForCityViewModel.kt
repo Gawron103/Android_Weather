@@ -173,11 +173,14 @@ class WeatherForCityViewModel constructor(
         }
     }
 
-    fun removeCity(city: City) {
+    fun removeCity(cityModel: CityModel) {
         viewModelScope.launch {
-            weatherRepository.deleteFromDb(city)
-            citiesLists.removeIf { it.locationModel?.get(0)?.cityName == city.name }
+            citiesLists.remove(cityModel)
+            weatherRepository.deleteFromDb(cityModel?.idInDb!!)
             citiesLiveData.value = citiesLists
+//            weatherRepository.deleteFromDb(city)
+//            citiesLists.removeIf { it.locationModel?.get(0)?.cityName == city.name }
+//            citiesLiveData.value = citiesLists
         }
     }
 

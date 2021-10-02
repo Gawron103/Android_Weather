@@ -16,16 +16,16 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustResize">
         <activity
-            android:name=".views.DetailedWeatherActivity"
+            android:name=".views.activities.DetailedWeatherActivity"
             android:exported="true" />
         <activity
-            android:name=".views.NoPermissionsActivity"
+            android:name=".views.activities.NoPermissionsActivity"
             android:exported="true" />
         <activity
-            android:name=".views.AddCityActivity"
+            android:name=".views.activities.AddCityActivity"
             android:exported="true" />
         <activity
-            android:name=".views.SplashScreenActivity"
+            android:name=".views.activities.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.MainActivity" />
+        <activity android:name=".views.activities.MainActivity" />
     </application>
 
 </manifest>

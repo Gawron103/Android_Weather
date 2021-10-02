@@ -1,30 +1,20 @@
-package com.example.weather.views
+package com.example.weather.views.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import com.example.weather.R
 import com.example.weather.utils.InputValidator
-import com.example.weather.viewmodels.AddCityViewModel
 //import com.example.weather.views.fragments.AddCityFragment
-import com.example.weather.views.fragments.DetailedWeatherFragment
-import com.example.weather.views.interfaces.Communicator
 
 class AddCityActivity : AppCompatActivity() {
 
+    private val TAG = "AddCityActivity"
     private lateinit var cityNameInput: EditText
     private lateinit var validator: InputValidator
-
-    companion object {
-        val TAG = DetailedWeatherFragment::class.java.simpleName
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
