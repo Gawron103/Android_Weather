@@ -31,7 +31,12 @@ class WeatherRepository constructor(
         dao.deleteCity(cityName)
     }
 
+    suspend fun isCityInDb(name: String): Boolean {
+        return dao.isCityInDb(name)
+    }
+
     fun getAllCities(): List<City> {
         return dao.getAllCities()
     }
+
 }

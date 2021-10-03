@@ -2,6 +2,7 @@ package com.example.weather.views.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -13,6 +14,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +33,8 @@ import com.example.weather.viewmodels.WeatherForCityViewModel
 import com.example.weather.viewmodels.WeatherForCityViewModelFactory
 import com.example.weather.views.adapters.CitiesListAdapter
 import com.google.android.gms.location.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,9 +44,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val value = result.data?.getStringExtra("NewCity")
+            Log.d(TAG, "Tmp val: $value")
+                    addCity(City(0, value!!))
+            Toast.makeText(this, "City added", Toast.LENGTH_LONG)
+        }
+        else {
+            Toast.makeText(this, "Wrong input", Toast.LENGTH_LONG)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "Activity destroyed")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Log.d(TAG, "onCreate")
 
         val cityDao = CityDatabase.getInstance(this).cityDAO
         val placesService = PlacesApi.getInstance()
@@ -63,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.sr_CitiesList)
         swipeRefreshLayout?.setOnRefreshListener {
             citiesWeatherViewModel.refresh()
-            getCoordsForCurrentLocation()
+//            getCoordsForCurrentLocation()
             swipeRefreshLayout.isRefreshing = false
         }
 
@@ -73,27 +97,34 @@ class MainActivity : AppCompatActivity() {
 //            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
         }
 
-        val addBtn = findViewById<Button>(R.id.btn_add)
+        val addBtn = findViewById<FloatingActionButton>(R.id.btn_add)
         addBtn?.setOnClickListener {
             val intent = Intent(this, AddCityActivity::class.java)
-            startActivity(intent)
+
+
+            resultLauncher.launch(intent)
+//            startActivity(intent)
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        citiesWeatherViewModel.refresh()
+
         observeWeatherViewModel()
 
-        getCoordsForCurrentLocation()
+//        getCoordsForCurrentLocation()
+    }
 
-        val cityToAdd: String? = intent.getStringExtra("NewCityName")
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "Activity resumed")
 
-        if(null != cityToAdd) {
-            Log.d(TAG, "New city to add!!")
-            addCity(City(0, cityToAdd))
-        }
-        else {
-            Log.d(TAG, "No new city to add")
-        }
+//        val cityToAdd: String? = intent.getStringExtra("NewCityName")
+
+//        if(null != cityToAdd) {
+//            Log.d(TAG, "Should add $cityToAdd")
+////            addCity(City(0, cityToAdd))
+//        }
     }
 
     private fun observeWeatherViewModel() {
@@ -104,7 +135,14 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
             }
             else {
+                Log.d(TAG, "observeWeatherViewModel -> cities has changed")
+                Log.d(TAG, "Cities size: ${it.size}")
+                for(city in it) {
+                    Log.d(TAG, "City inside: ${city.locationModel?.get(0)?.cityName}")
+                }
+
                 citiesWeatherListAdapter.updateCities(it)
+//                citiesWeatherListAdapter.notifyDataSetChanged()
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
             }
 
@@ -116,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
             if(isError) {
                 findViewById<Button>(R.id.btn_retry)?.visibility = View.VISIBLE
-                findViewById<Button>(R.id.btn_add)?.visibility = View.GONE
+                findViewById<FloatingActionButton>(R.id.btn_add)?.visibility = View.GONE
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
             }
         })
@@ -124,7 +162,7 @@ class MainActivity : AppCompatActivity() {
         citiesWeatherViewModel.weatherLoading.observe(this, Observer { isLoading ->
             isLoading?.let {
                 findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isLoading) View.VISIBLE else View.GONE
-                findViewById<Button>(R.id.btn_add)?.visibility = if (isLoading) View.GONE else View.VISIBLE
+                findViewById<FloatingActionButton>(R.id.btn_add)?.visibility = if (isLoading) View.GONE else View.VISIBLE
 
                 if(isLoading) {
                     findViewById<TextView>(R.id.tv_errorLoad)?.visibility = View.GONE

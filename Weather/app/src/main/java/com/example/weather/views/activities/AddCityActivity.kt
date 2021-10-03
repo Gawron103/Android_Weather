@@ -1,10 +1,13 @@
 package com.example.weather.views.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -17,9 +20,16 @@ class AddCityActivity : AppCompatActivity() {
     private val TAG = "AddCityActivity"
     private lateinit var cityNameInput: EditText
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "Activity destroyed")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_city)
+
+        Log.d(TAG, "onCreate")
 
         cityNameInput = findViewById(R.id.etCityNameInput)
 
@@ -32,29 +42,18 @@ class AddCityActivity : AppCompatActivity() {
         addBtn.setOnClickListener {
             val cityToAdd = cityNameInput.text.toString()
 
-            val result = InputValidator.checkInput(cityToAdd)
+            val intent = Intent(this, MainActivity::class.java)
 
-            if (result) {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("NewCityName", cityToAdd)
-                startActivity(intent)
+            if (InputValidator.checkInput(cityToAdd)) {
+                intent.putExtra("NewCity", cityToAdd)
+                setResult(Activity.RESULT_OK, intent)
             }
             else {
-                Toast.makeText(this, "Wrong input!", Toast.LENGTH_LONG)
+                setResult(Activity.RESULT_CANCELED, intent)
             }
+
+            finish()
         }
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        return when (keyCode) {
-            KeyEvent.KEYCODE_ENTER -> hideKeyboard()
-
-            else -> super.onKeyUp(keyCode, event)
-        }
-    }
-}
-
-fun AddCityActivity.hideKeyboard(): Boolean {
-    val imm = applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    return imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 }

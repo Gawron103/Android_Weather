@@ -18,9 +18,16 @@ class DetailedWeatherActivity : AppCompatActivity() {
 
     private val TAG = "DetailedWeatherActivity"
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "Activity destroyed")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detailed_weather)
+
+        Log.d(TAG, "onCreate")
 
         val weatherModel= intent.getParcelableExtra<WeatherModel>("weather_model")
         val cityName = intent.getStringExtra("city_name")

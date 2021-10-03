@@ -20,8 +20,7 @@ class WeatherForCityViewModel constructor(
     private val weatherRepository: WeatherRepository
 ): ViewModel() {
 
-    // Debug tag
-    private val TAG = "WeatherSharedModel"
+    private val TAG = "WeatherForCityViewModel"
 
     // Says if there is an error when loading the data
     val weatherLoadError = MutableLiveData<Boolean>()
@@ -33,27 +32,17 @@ class WeatherForCityViewModel constructor(
 
     private var citiesLists = mutableListOf<CityModel>()
 
-    init {
-        Log.d(TAG, "Init called")
-        refresh()
-    }
-
     fun refresh() {
         viewModelScope.launch {
-            Log.d(TAG, "refresh triggered")
+            Log.d(TAG, "ViewModel refresh triggered")
             weatherLoading.value = true
 
             citiesLists.clear()
-            citiesLiveData.value?.clear()
-            Log.d(TAG, "citiesList clear")
 
-            var eccorOccured = false
-
+            // get saved cities from db
             val cities = withContext(Dispatchers.IO) {
                 weatherRepository.getAllCities()
             }
-
-            Log.d(TAG, "Number of cities in DB: ${cities.size}")
 
             for (city in cities) {
                 var weatherModel: WeatherModel? = null
@@ -63,81 +52,67 @@ class WeatherForCityViewModel constructor(
 
                 if (null != locationModel) {
                     weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
-                } else {
-                    eccorOccured = true
-                }
 
-                if (null != weatherModel) {
-                    placesModel = getPlaceIdForCity(city.name)
-                } else {
-                    eccorOccured = true
-                }
+                    if (null != weatherModel) {
+                        placesModel = getPlaceIdForCity(city.name)
 
-                if (null != placesModel) {
-                    citiesLists.add(
-                        CityModel(
-                            city.id,
-                            weatherModel,
-                            locationModel,
-                            placesModel
-                        )
-                    )
-                    Log.d(TAG, "city added in weathersharedviewmodel")
-                } else {
-                    eccorOccured = true
+                        if (null != placesModel) {
+                            citiesLists.add(
+                                CityModel(
+                                    city.id,
+                                    weatherModel,
+                                    locationModel,
+                                    placesModel
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
-            if (!eccorOccured) {
-                Log.d(TAG, "error not occured")
-                citiesLiveData.value = citiesLists
-                weatherLoadError.value = false
-            }
-            else {
-                weatherLoadError.value = true
-            }
-
+            citiesLiveData.value = citiesLists
             weatherLoading.value = false
         }
     }
 
     fun addCity(city: City) {
         viewModelScope.launch {
-            Log.d(TAG, "addCity triggered")
+            Log.d(TAG, "ViewModel add city triggered")
+            weatherLoading.value = true
 
-            var weatherModel: WeatherModel? = null
-            var placesModel: PlacesModel? = null
-
-            val citiesList = citiesLists
-
-            var locationModel: LocationModel? = getLocationForCity(city.name)
-
-            if (null != locationModel) {
-                weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
+            val isCityInDb = withContext(Dispatchers.IO) {
+                weatherRepository.isCityInDb(city.name)
             }
 
-            if (null != weatherModel) {
-                placesModel = getPlaceIdForCity(city.name)
+            if(!isCityInDb) {
+                var weatherModel: WeatherModel? = null
+                var placesModel: PlacesModel? = null
+
+                var locationModel: LocationModel? = getLocationForCity(city.name)
+
+                if (null != locationModel) {
+                    weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
+
+                    if (null != weatherModel) {
+                        placesModel = getPlaceIdForCity(city.name)
+
+                        if (null != placesModel) {
+                            weatherRepository.insertToDb(city)
+
+                            citiesLists.add(CityModel(
+                                city.id,
+                                weatherModel,
+                                locationModel,
+                                placesModel
+                            ))
+
+                            citiesLiveData.value = citiesLists
+                        }
+                    }
+                }
             }
 
-            if (null != placesModel) {
-                citiesList.add(
-                    CityModel(
-                        city.id,
-                        weatherModel,
-                        locationModel,
-                        placesModel
-                    )
-                )
-
-                Log.d(TAG, "city add was successfully")
-
-                citiesLists = citiesList
-                citiesLiveData.value = citiesLists
-
-                Log.d(TAG, "city has been added to the DB")
-                weatherRepository.insertToDb(city)
-            }
+            weatherLoading.value = false
         }
     }
 
@@ -169,6 +144,7 @@ class WeatherForCityViewModel constructor(
 
                 // always add current localization as first item
                 citiesLists.add(0, currentLocation)
+                citiesLiveData.value = citiesLists
             }
         }
     }

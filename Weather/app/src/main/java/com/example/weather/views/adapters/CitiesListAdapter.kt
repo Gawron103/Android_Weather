@@ -25,10 +25,14 @@ class CitiesListAdapter(
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>()
 {
 
+    private val TAG = "CitiesListAdapter"
+
     fun updateCities(newCities: List<CityModel>) {
+        Log.d(TAG, "CitiesList size: ${citiesList.size}")
         citiesList.clear()
         citiesList.addAll(newCities)
         notifyDataSetChanged()
+        Log.d(TAG, "CitiesList size: ${citiesList.size}")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CitiesListViewHolder (
