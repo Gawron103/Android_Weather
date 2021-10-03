@@ -32,6 +32,7 @@ interface WeatherApi {
         @Query("appid") appKey: String
     ): Response<LocationModel>
 
+
     companion object {
         private var weatherService: WeatherApi? = null
         private const val BASE_URL = "http://api.openweathermap.org"

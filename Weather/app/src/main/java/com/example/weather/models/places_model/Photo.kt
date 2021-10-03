@@ -1,9 +1,5 @@
 package com.example.weather.models.places_model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
 data class Photo(
 
     val height: Int,
@@ -14,4 +10,4 @@ data class Photo(
 
     val width: Int
 
-): Parcelable
+)

@@ -23,12 +23,7 @@ class CitiesListAdapter(
     private val onDeleteCallback: (CityModel) -> Unit
 ):
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>()
-    /* View.OnClickListener */
 {
-
-//    public interface OnItemClick {
-//        fun onClick(city: City, position: Int)
-//    }
 
     fun updateCities(newCities: List<CityModel>) {
         citiesList.clear()
@@ -62,7 +57,6 @@ class CitiesListAdapter(
         private val localizationIcon = view.findViewById<ImageView>(R.id.iv_localizationIcon)
 
         fun bind(modelForLocation: CityModel, position: Int) {
-            Log.d(TAG, "Position: ${position}, name: ${modelForLocation.locationModel?.get(0)?.cityName}")
             Glide.with(context).load(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${modelForLocation.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(cityImg)
@@ -78,20 +72,20 @@ class CitiesListAdapter(
 
             itemView.setOnClickListener {
                 val intent = Intent(context, DetailedWeatherActivity::class.java)
-                intent.putExtra("model", modelForLocation)
+                intent.putExtra("weather_model", modelForLocation.weatherModel)
+                intent.putExtra("tmp", modelForLocation.weatherModel?.dailyConditions)
+                intent.putExtra("city_name", modelForLocation.locationModel?.get(0)?.cityName)
+                intent.putExtra("country_code", modelForLocation.locationModel?.get(0)?.countryCode)
                 Log.d(TAG, "${cityName.text} clicked")
                 context.startActivity(intent)
             }
 
             deleteBtn.setOnClickListener {
-//                databaseCommunicator.deleteCity(
-//                    City(modelForLocation.idInDb!!, modelForLocation.locationModel?.get(0)?.cityName!!)
                 onDeleteCallback(modelForLocation)
-//                )
                 Log.d(TAG, "Delete icon clicked")
-                Log.d(TAG, "Deteled ${modelForLocation.locationModel?.get(0)?.cityName!!} with id ${modelForLocation.idInDb!!}")
             }
         }
+
     }
 
 }

@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.weather.R
 import com.example.weather.utils.InputValidator
-//import com.example.weather.views.fragments.AddCityFragment
 
 class AddCityActivity : AppCompatActivity() {
 

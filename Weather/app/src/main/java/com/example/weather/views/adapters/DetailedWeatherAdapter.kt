@@ -15,13 +15,8 @@ import com.example.weather.utils.DateProvider
 import kotlin.math.round
 
 class DetailedWeatherAdapter(
-    private var weatherData: CityModel
+    private var forecast: List<Daily>
 ): RecyclerView.Adapter<DetailedWeatherAdapter.DetailedWeatherViewHolder>() {
-
-    fun updateForecast(newForecast: CityModel) {
-        weatherData = newForecast
-        notifyDataSetChanged()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = DetailedWeatherViewHolder (
         LayoutInflater.from(parent.context).inflate(R.layout.item_predicted_weather, parent, false),
@@ -29,10 +24,10 @@ class DetailedWeatherAdapter(
     )
 
     override fun onBindViewHolder(holder: DetailedWeatherViewHolder, position: Int) {
-        holder.bind(weatherData.weatherModel?.dailyConditions?.get(position)!!)
+        holder.bind(forecast[position])
     }
 
-    override fun getItemCount(): Int = weatherData.weatherModel?.dailyConditions?.size!!
+    override fun getItemCount(): Int = forecast.size
 
     class DetailedWeatherViewHolder(view: View, private val context: Context): RecyclerView.ViewHolder(view) {
 
@@ -47,4 +42,5 @@ class DetailedWeatherAdapter(
             Glide.with(context).load("https://openweathermap.org/img/wn/${weather?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(weatherIcon)
         }
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.weather.views.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -9,54 +10,49 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.R
-import com.example.weather.models.CityModel
+import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.views.adapters.DetailedWeatherAdapter
 import kotlin.math.round
 
 class DetailedWeatherActivity : AppCompatActivity() {
 
-    private lateinit var detailedWeatherAdapter: DetailedWeatherAdapter
-    private lateinit var backBtn: Button
-    private lateinit var model: CityModel
+    private val TAG = "DetailedWeatherActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detailed_weather)
 
-        model = intent.getParcelableExtra("model")!!
-
-        detailedWeatherAdapter = DetailedWeatherAdapter(model)
+        val weatherModel= intent.getParcelableExtra<WeatherModel>("weather_model")
+        val cityName = intent.getStringExtra("city_name")
+        val countryCode = intent.getStringExtra("country_code")
 
         val forecast = findViewById<RecyclerView>(R.id.rv_forecast).apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = detailedWeatherAdapter
+            adapter = DetailedWeatherAdapter(weatherModel?.dailyConditions!!)
         }
 
-        backBtn = findViewById(R.id.btn_back)
+        val backBtn = findViewById<Button>(R.id.btn_back)
+        backBtn.setOnClickListener { finish() }
 
-        backBtn.setOnClickListener {
-//            communicator.popFragment(DetailedWeatherFragment.TAG)
-            finish()
-        }
-
-        updateUI()
+        updateUI(weatherModel!!, cityName!!, countryCode!!)
     }
 
-    private fun updateUI() {
+    private fun updateUI(model: WeatherModel, cityName: String, countryCode: String) {
         val cityWeatherIcon = findViewById<ImageView>(R.id.iv_cityWeatherIcon)
         val cityWeatherDesc = findViewById<TextView>(R.id.tv_cityWeatherDesc)
         val cityWeatherTemp = findViewById<TextView>(R.id.tv_cityWeatherTemp)
         val cityLocation = findViewById<TextView>(R.id.tv_cityWeatherLocation)
 
-        Glide.with(this).load("https://openweathermap.org/img/wn/${model?.weatherModel?.currentConditions?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(cityWeatherIcon!!)
+        Glide.with(this).load("https://openweathermap.org/img/wn/${model?.currentConditions?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(cityWeatherIcon!!)
 
-        cityWeatherDesc?.text = model.weatherModel?.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
-        cityWeatherTemp?.text = round(model.weatherModel?.currentConditions?.temp!!).toString()
+        cityWeatherDesc?.text = model?.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
+        cityWeatherTemp?.text = round(model?.currentConditions?.temp!!).toString()
 
         val builder = StringBuilder()
-//        builder.append(model.locationModel?.get(0)?.countryCode)
-//            .append(", ")
-//            .append(model.locationModel?.get(0)?.cityName)
+
+        builder.append(countryCode)
+            .append(", ")
+            .append(cityName)
 
         cityLocation?.text = builder.toString()
     }

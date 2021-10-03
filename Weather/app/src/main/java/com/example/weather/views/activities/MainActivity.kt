@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
 
         val addBtn = findViewById<Button>(R.id.btn_add)
         addBtn?.setOnClickListener {
-//            Log.d(CitiesMainWeatherFragment.TAG, "Add btn clicked")
             val intent = Intent(this, AddCityActivity::class.java)
             startActivity(intent)
         }
@@ -165,8 +164,6 @@ class MainActivity : AppCompatActivity() {
                     requestNewLocationData()
                 }
                 else {
-//                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lat: ${location.latitude}")
-//                    Log.d(CitiesMainWeatherFragment.TAG, "GettingCoordsForCurrentLocation Lon: ${location.longitude}")
                     citiesWeatherViewModel.addCurrentCity(
                         location.latitude,
                         location.longitude
@@ -195,8 +192,6 @@ class MainActivity : AppCompatActivity() {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             var lastLocation: Location = locationResult.lastLocation
-//            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lat: ${lastLocation.latitude}")
-//            Log.d(CitiesMainWeatherFragment.TAG, "LocationCallback lon: ${lastLocation.longitude}")
             citiesWeatherViewModel.addCurrentCity(
                 lastLocation.latitude,
                 lastLocation.longitude
