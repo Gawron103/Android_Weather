@@ -63,10 +63,10 @@
 
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:src="@drawable/city_add_icon"
+        android:src="@drawable/add_location_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:maxImageSize="48dp" />
+        app:maxImageSize="56dp" />
 
     <TextView
         android:id="@+id/tv_noCities"
