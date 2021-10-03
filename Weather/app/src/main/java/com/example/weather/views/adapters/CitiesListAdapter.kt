@@ -73,7 +73,6 @@ class CitiesListAdapter(
             itemView.setOnClickListener {
                 val intent = Intent(context, DetailedWeatherActivity::class.java)
                 intent.putExtra("weather_model", modelForLocation.weatherModel)
-                intent.putExtra("tmp", modelForLocation.weatherModel?.dailyConditions)
                 intent.putExtra("city_name", modelForLocation.locationModel?.get(0)?.cityName)
                 intent.putExtra("country_code", modelForLocation.locationModel?.get(0)?.countryCode)
                 Log.d(TAG, "${cityName.text} clicked")

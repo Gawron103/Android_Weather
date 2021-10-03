@@ -1,6 +1,6 @@
 package com.example.weather.utils
 
-class InputValidator {
+object InputValidator {
 
     fun checkInput(input: String): Boolean {
         var result = checkIfNumbers(input)
