@@ -34,7 +34,6 @@ import com.example.weather.viewmodels.WeatherForCityViewModelFactory
 import com.example.weather.views.adapters.CitiesListAdapter
 import com.google.android.gms.location.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.parcelize.Parcelize
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,8 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val value = result.data?.getStringExtra("NewCity")
-            Log.d(TAG, "Tmp val: $value")
-                    addCity(City(0, value!!))
+            addCity(City(0, value!!))
             Toast.makeText(this, "City added", Toast.LENGTH_LONG)
         }
         else {
@@ -56,16 +54,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "Activity destroyed")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        Log.d(TAG, "onCreate")
 
         val cityDao = CityDatabase.getInstance(this).cityDAO
         val placesService = PlacesApi.getInstance()
@@ -100,10 +91,7 @@ class MainActivity : AppCompatActivity() {
         val addBtn = findViewById<FloatingActionButton>(R.id.btn_add)
         addBtn?.setOnClickListener {
             val intent = Intent(this, AddCityActivity::class.java)
-
-
             resultLauncher.launch(intent)
-//            startActivity(intent)
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -118,13 +106,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Activity resumed")
-
-//        val cityToAdd: String? = intent.getStringExtra("NewCityName")
-
-//        if(null != cityToAdd) {
-//            Log.d(TAG, "Should add $cityToAdd")
-////            addCity(City(0, cityToAdd))
-//        }
     }
 
     private fun observeWeatherViewModel() {
@@ -135,14 +116,7 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
             }
             else {
-                Log.d(TAG, "observeWeatherViewModel -> cities has changed")
-                Log.d(TAG, "Cities size: ${it.size}")
-                for(city in it) {
-                    Log.d(TAG, "City inside: ${city.locationModel?.get(0)?.cityName}")
-                }
-
                 citiesWeatherListAdapter.updateCities(it)
-//                citiesWeatherListAdapter.notifyDataSetChanged()
                 findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
             }
 
@@ -171,6 +145,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        citiesWeatherViewModel.cityExists.observe(this, Observer { cityExists ->
+            if (cityExists) {
+                Toast.makeText(this, "City already exists", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun addCity(city: City) {
@@ -178,7 +158,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteCity(cityModel: CityModel) {
-        Log.d(TAG, "Removing ${cityModel?.locationModel?.get(0)?.cityName!!}")
         citiesWeatherViewModel.removeCity(cityModel)
     }
 

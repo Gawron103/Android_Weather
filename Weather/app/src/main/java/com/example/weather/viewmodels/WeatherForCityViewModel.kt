@@ -28,6 +28,8 @@ class WeatherForCityViewModel constructor(
     // Says is the view model is in the process of loading the data
     val weatherLoading = MutableLiveData<Boolean>()
 
+    val cityExists = MutableLiveData<Boolean>()
+
     var citiesLiveData = MutableLiveData<MutableList<CityModel>>()
 
     private var citiesLists = mutableListOf<CityModel>()
@@ -79,6 +81,7 @@ class WeatherForCityViewModel constructor(
         viewModelScope.launch {
             Log.d(TAG, "ViewModel add city triggered")
             weatherLoading.value = true
+            cityExists.value = false
 
             val isCityInDb = withContext(Dispatchers.IO) {
                 weatherRepository.isCityInDb(city.name)
@@ -97,6 +100,7 @@ class WeatherForCityViewModel constructor(
                         placesModel = getPlaceIdForCity(city.name)
 
                         if (null != placesModel) {
+                            city.name = locationModel[0].cityName!!
                             weatherRepository.insertToDb(city)
 
                             citiesLists.add(CityModel(
@@ -110,6 +114,9 @@ class WeatherForCityViewModel constructor(
                         }
                     }
                 }
+            }
+            else {
+                cityExists.value = true
             }
 
             weatherLoading.value = false

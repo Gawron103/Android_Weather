@@ -28,11 +28,9 @@ class CitiesListAdapter(
     private val TAG = "CitiesListAdapter"
 
     fun updateCities(newCities: List<CityModel>) {
-        Log.d(TAG, "CitiesList size: ${citiesList.size}")
         citiesList.clear()
         citiesList.addAll(newCities)
         notifyDataSetChanged()
-        Log.d(TAG, "CitiesList size: ${citiesList.size}")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CitiesListViewHolder (
@@ -65,7 +63,7 @@ class CitiesListAdapter(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${modelForLocation.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(cityImg)
 
-            if (Const.CURRENT_LOCATION_POSITION == position) deleteBtn.visibility = View.GONE else localizationIcon.visibility = View.GONE
+//            if (Const.CURRENT_LOCATION_POSITION == position) deleteBtn.visibility = View.GONE else localizationIcon.visibility = View.GONE
 
             cityName.text = modelForLocation.locationModel?.get(0)?.cityName
             countryCode.text = modelForLocation.locationModel?.get(0)?.countryCode

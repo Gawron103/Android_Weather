@@ -12,6 +12,6 @@ data class City(
     val id: Int,
 
     @ColumnInfo(name = "city_name")
-    val name: String
+    var name: String
 
 )
