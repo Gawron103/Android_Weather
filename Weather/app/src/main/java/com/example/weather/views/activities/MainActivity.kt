@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.weather.R
+import com.example.weather.databinding.ActivityMainBinding
 import com.example.weather.db.City
 import com.example.weather.db.CityDatabase
 import com.example.weather.models.CityModel
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var citiesWeatherViewModel: WeatherForCityViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -56,40 +58,40 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val cityDao = CityDatabase.getInstance(this).cityDAO
         val placesService = PlacesApi.getInstance()
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService, cityDao)
 
-        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity)
+        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity, this)
 
         citiesWeatherViewModel = ViewModelProvider(
             this,
             WeatherForCityViewModelFactory(weatherRepository)
         ).get(WeatherForCityViewModel::class.java)
 
-        findViewById<RecyclerView>(R.id.rv_citiesList).apply {
+        binding.rvCitiesList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = citiesWeatherListAdapter
         }
 
-        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.sr_CitiesList)
-        swipeRefreshLayout?.setOnRefreshListener {
+        binding.srCitiesList.setOnRefreshListener {
             citiesWeatherViewModel.refresh()
 //            getCoordsForCurrentLocation()
-            swipeRefreshLayout.isRefreshing = false
+            binding.srCitiesList.isRefreshing = false
         }
 
-        val retryBtn = findViewById<Button>(R.id.btn_retry)
-        retryBtn?.setOnClickListener {
+
+        binding.btnRetry.setOnClickListener {
 //            Log.d(CitiesMainWeatherFragment.TAG, "Retry btn clicked")
 //            citiesWeatherViewModel.refresh(cityViewModel.cities.value!!)
         }
 
-        val addBtn = findViewById<FloatingActionButton>(R.id.btn_add)
-        addBtn?.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
             val intent = Intent(this, AddCityActivity::class.java)
             resultLauncher.launch(intent)
         }
@@ -113,35 +115,35 @@ class MainActivity : AppCompatActivity() {
             if (true == it?.isEmpty()) {
                 // display text here that there is no cities added
                 citiesWeatherListAdapter.updateCities(listOf())
-                findViewById<TextView>(R.id.tv_noCities)?.visibility = View.VISIBLE
+                binding.tvNoCities.visibility = View.VISIBLE
             }
             else {
                 citiesWeatherListAdapter.updateCities(it)
-                findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
+                binding.tvNoCities.visibility = View.GONE
             }
 
-            findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
+            binding.btnRetry.visibility = View.GONE
         })
 
         citiesWeatherViewModel.weatherLoadError.observe(this, Observer { isError ->
-            findViewById<TextView>(R.id.tv_errorLoad)?.visibility = if(isError) View.VISIBLE else View.GONE
+            binding.tvErrorLoad.visibility = if(isError) View.VISIBLE else View.GONE
 
             if(isError) {
-                findViewById<Button>(R.id.btn_retry)?.visibility = View.VISIBLE
-                findViewById<FloatingActionButton>(R.id.btn_add)?.visibility = View.GONE
-                findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
+                binding.btnRetry.visibility = View.VISIBLE
+                binding.btnAdd.visibility = View.GONE
+                binding.tvNoCities.visibility = View.GONE
             }
         })
 
         citiesWeatherViewModel.weatherLoading.observe(this, Observer { isLoading ->
             isLoading?.let {
-                findViewById<ProgressBar>(R.id.pb_loading)?.visibility = if(isLoading) View.VISIBLE else View.GONE
-                findViewById<FloatingActionButton>(R.id.btn_add)?.visibility = if (isLoading) View.GONE else View.VISIBLE
+                binding.pbLoading.visibility = if(isLoading) View.VISIBLE else View.GONE
+                binding.btnAdd.visibility = if (isLoading) View.GONE else View.VISIBLE
 
                 if(isLoading) {
-                    findViewById<TextView>(R.id.tv_errorLoad)?.visibility = View.GONE
-                    findViewById<Button>(R.id.btn_retry)?.visibility = View.GONE
-                    findViewById<TextView>(R.id.tv_noCities)?.visibility = View.GONE
+                    binding.tvErrorLoad.visibility = View.GONE
+                    binding.btnRetry.visibility = View.GONE
+                    binding.tvNoCities.visibility = View.GONE
                 }
             }
         })

@@ -7,18 +7,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.example.weather.R
+import com.example.weather.databinding.ActivityAddCityBinding
 import com.example.weather.utils.InputValidator
 
 class AddCityActivity : AppCompatActivity() {
 
     private val TAG = "AddCityActivity"
-    private lateinit var cityNameInput: EditText
+
+    private lateinit var binding: ActivityAddCityBinding
 
     override fun onDestroy() {
         super.onDestroy()
@@ -27,20 +30,16 @@ class AddCityActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_city)
+        binding = ActivityAddCityBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        Log.d(TAG, "onCreate")
-
-        cityNameInput = findViewById(R.id.etCityNameInput)
-
-        val backBtn = findViewById<Button>(R.id.btn_backToCitiesView)
-        backBtn.setOnClickListener {
+        binding.btnBackToCitiesView.setOnClickListener {
             finish()
         }
 
-        val addBtn = findViewById<Button>(R.id.btn_addCity)
-        addBtn.setOnClickListener {
-            val cityToAdd = cityNameInput.text.toString()
+        binding.btnAddCity.setOnClickListener {
+            val cityToAdd = binding.etCityNameInput.text.toString()
 
             val intent = Intent(this, MainActivity::class.java)
 

@@ -9,38 +9,31 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.R
+import com.example.weather.databinding.ItemPredictedWeatherBinding
 import com.example.weather.models.CityModel
 import com.example.weather.models.current_weather_model.Daily
 import com.example.weather.utils.DateProvider
 import kotlin.math.round
 
 class DetailedWeatherAdapter(
-    private var forecast: List<Daily>
+    private var forecast: List<Daily>,
+    private val context: Context
 ): RecyclerView.Adapter<DetailedWeatherAdapter.DetailedWeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = DetailedWeatherViewHolder (
-        LayoutInflater.from(parent.context).inflate(R.layout.item_predicted_weather, parent, false),
-        parent.context
+        ItemPredictedWeatherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: DetailedWeatherViewHolder, position: Int) {
-        holder.bind(forecast[position])
+        holder.binding.tvDayName.text = DateProvider.getDayName(forecast[position].currentTime!!)
+        holder.binding.tvTemp.text = round(forecast[position].tempInDay?.day!!).toString()
+        Glide.with(context).load(
+            "https://openweathermap.org/img/wn/${forecast[position].weather?.get(0)?.icon}@4x.png"
+        ).error(R.drawable.error_icon).into(holder.binding.ivWeatherIcon)
     }
 
     override fun getItemCount(): Int = forecast.size
 
-    class DetailedWeatherViewHolder(view: View, private val context: Context): RecyclerView.ViewHolder(view) {
-
-        private val dayName = view.findViewById<TextView>(R.id.tv_dayName)
-        private val temperature = view.findViewById<TextView>(R.id.tv_temp)
-        private val weatherIcon = view.findViewById<ImageView>(R.id.iv_weatherIcon)
-
-        fun bind(weather: Daily) {
-            dayName.text = DateProvider.getDayName(weather?.currentTime!!)
-            temperature.text = round(weather?.tempInDay?.day!!).toString()
-
-            Glide.with(context).load("https://openweathermap.org/img/wn/${weather?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(weatherIcon)
-        }
-    }
+    inner class DetailedWeatherViewHolder(val binding: ItemPredictedWeatherBinding): RecyclerView.ViewHolder(binding.root)
 
 }

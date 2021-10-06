@@ -7,19 +7,22 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.weather.R
+import com.example.weather.databinding.ActivitySplashScreenBinding
 import com.example.weather.utils.Const
 import com.example.weather.utils.PermissionsChecker
 
 class SplashScreenActivity : AppCompatActivity() {
 
     private lateinit var splashScreenLayout: ConstraintLayout
+    private lateinit var binding: ActivitySplashScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
+        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        splashScreenLayout = findViewById(R.id.cl_splashScreenLayout)
-        splashScreenLayout.visibility = View.GONE
+        binding.clSplashScreenLayout.visibility = View.GONE
 
         checkPermissions()
     }
@@ -43,9 +46,9 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun changeActivity(activityName: Class<out AppCompatActivity>) {
-        splashScreenLayout.visibility = View.VISIBLE
-        splashScreenLayout.alpha = 0f
-        splashScreenLayout.animate().setDuration(3000).alpha(1f).withEndAction {
+        binding.clSplashScreenLayout.visibility = View.VISIBLE
+        binding.clSplashScreenLayout.alpha = 0f
+        binding.clSplashScreenLayout.animate().setDuration(3000).alpha(1f).withEndAction {
             startActivity(Intent(this, activityName))
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             finish()
