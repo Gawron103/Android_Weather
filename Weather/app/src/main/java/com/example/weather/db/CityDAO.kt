@@ -6,10 +6,10 @@ import androidx.room.*
 interface CityDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCity(city: City)
+    suspend fun insertCity(city: City): Long
 
     @Query("DELETE FROM city_data_table WHERE city_id = :cityId")
-    suspend fun deleteCity(cityId: Int)
+    suspend fun deleteCity(cityId: Long)
 
     @Query("SELECT EXISTS(SELECT * FROM city_data_table WHERE city_name = :name)")
     fun isCityInDb(name: String): Boolean

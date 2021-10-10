@@ -16,41 +16,30 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class WeatherForCityViewModel constructor(
-    private val weatherRepository: WeatherRepository
+class CitiesDataViewModel constructor(
+    private val repository: WeatherRepository
 ): ViewModel() {
 
-    private val TAG = "WeatherForCityViewModel"
-
-    // Says if there is an error when loading the data
-    val weatherLoadError = MutableLiveData<Boolean>()
-
-    // Says is the view model is in the process of loading the data
     val weatherLoading = MutableLiveData<Boolean>()
-
     val cityExists = MutableLiveData<Boolean>()
-
     var citiesLiveData = MutableLiveData<MutableList<CityModel>>()
-
     private var citiesLists = mutableListOf<CityModel>()
 
     fun refresh() {
         viewModelScope.launch {
-            Log.d(TAG, "ViewModel refresh triggered")
             weatherLoading.value = true
 
             citiesLists.clear()
 
-            // get saved cities from db
             val cities = withContext(Dispatchers.IO) {
-                weatherRepository.getAllCities()
+                repository.getAllCities()
             }
 
             for (city in cities) {
                 var weatherModel: WeatherModel? = null
                 var placesModel: PlacesModel? = null
 
-                var locationModel: LocationModel? = getLocationForCity(city.name)
+                val locationModel: LocationModel? = getLocationForCity(city.name)
 
                 if (null != locationModel) {
                     weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
@@ -77,34 +66,32 @@ class WeatherForCityViewModel constructor(
         }
     }
 
-    fun addCity(city: City) {
+    fun addCity(name: String) {
         viewModelScope.launch {
-            Log.d(TAG, "ViewModel add city triggered")
             weatherLoading.value = true
             cityExists.value = false
 
             val isCityInDb = withContext(Dispatchers.IO) {
-                weatherRepository.isCityInDb(city.name)
+                repository.isCityInDb(name)
             }
 
             if(!isCityInDb) {
                 var weatherModel: WeatherModel? = null
                 var placesModel: PlacesModel? = null
 
-                var locationModel: LocationModel? = getLocationForCity(city.name)
+                val locationModel: LocationModel? = getLocationForCity(name)
 
                 if (null != locationModel) {
                     weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
 
                     if (null != weatherModel) {
-                        placesModel = getPlaceIdForCity(city.name)
+                        placesModel = getPlaceIdForCity(name)
 
                         if (null != placesModel) {
-                            city.name = locationModel[0].cityName!!
-                            weatherRepository.insertToDb(city)
+                            val id = repository.insertToDb(City(locationModel[0].cityName!!))
 
                             citiesLists.add(CityModel(
-                                city.id,
+                                id,
                                 weatherModel,
                                 locationModel,
                                 placesModel
@@ -123,43 +110,10 @@ class WeatherForCityViewModel constructor(
         }
     }
 
-    fun addCurrentCity(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            var locationModel: LocationModel? = null
-            var weatherModel: WeatherModel? = null
-            var placesModel: PlacesModel? = null
-
-            locationModel = getNameForLocation(lat, lon)
-
-            if (null != locationModel) {
-                weatherModel = getWeatherForCity(lat, lon)
-            }
-
-            if (null != weatherModel) {
-                placesModel = getPlaceIdForCity(locationModel?.get(0)?.cityName!!)
-            }
-
-            if (null != placesModel) {
-                val currentLocation = CityModel(
-                    0,
-                    weatherModel,
-                    locationModel,
-                    placesModel
-                )
-
-                Log.d(TAG, "Weather for current city fetched successfully")
-
-                // always add current localization as first item
-                citiesLists.add(0, currentLocation)
-                citiesLiveData.value = citiesLists
-            }
-        }
-    }
-
     fun removeCity(cityModel: CityModel) {
         viewModelScope.launch {
             citiesLists.remove(cityModel)
-            weatherRepository.deleteFromDb(cityModel?.idInDb!!)
+            repository.deleteFromDb(cityModel.idInDb!!)
             citiesLiveData.value = citiesLists
         }
     }
@@ -201,24 +155,24 @@ class WeatherForCityViewModel constructor(
     }
 
     private suspend fun fetchWeather(lat: Double, lon: Double): Response<WeatherModel> {
-                return weatherRepository.getWeather(
-                    lat,
-                    lon,
-                    "minutely,hourly,alerts",
-                    "metric",
-                    BuildConfig.WEATHER_API_KEY
-                )
+        return repository.getWeather(
+            lat,
+            lon,
+            "minutely,hourly,alerts",
+            "metric",
+            BuildConfig.WEATHER_API_KEY
+        )
     }
 
     private suspend fun fetchLocation(city: String): Response<LocationModel> {
-        return weatherRepository.getCoordinates(
+        return repository.getCoordinates(
             city,
             BuildConfig.WEATHER_API_KEY
         )
     }
 
     private suspend fun fetchName(lat: Double, lon: Double): Response<LocationModel> {
-        return weatherRepository.getNameForLocation(
+        return repository.getNameForLocation(
             lat,
             lon,
             BuildConfig.WEATHER_API_KEY
@@ -226,7 +180,7 @@ class WeatherForCityViewModel constructor(
     }
 
     private suspend fun fetchPlaceId(cityName: String): Response<PlacesModel> {
-        return weatherRepository.getPlaceId(
+        return repository.getPlaceId(
             cityName,
             BuildConfig.PLACES_API_KEY
         )

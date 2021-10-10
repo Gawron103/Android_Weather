@@ -23,12 +23,12 @@ class WeatherRepository constructor(
     suspend fun getPlaceId(placeName: String, appKey:String) =
         placesService.getPlaceId(placeName, "textquery", "photos", appKey)
 
-    suspend fun insertToDb(city: City) {
-        dao.insertCity(city)
+    suspend fun insertToDb(city: City): Long {
+        return dao.insertCity(city)
     }
 
-    suspend fun deleteFromDb(cityName: Int) {
-        dao.deleteCity(cityName)
+    suspend fun deleteFromDb(cityId: Long) {
+        dao.deleteCity(cityId)
     }
 
     suspend fun isCityInDb(name: String): Boolean {

@@ -6,7 +6,7 @@ import com.example.weather.models.places_model.PlacesModel
 
 data class CityModel(
 
-    val idInDb: Int?,
+    val idInDb: Long?,
 
     val weatherModel: WeatherModel?,
 

@@ -5,15 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.weather.R
 import com.example.weather.databinding.ActivitySplashScreenBinding
 import com.example.weather.utils.Const
 import com.example.weather.utils.PermissionsChecker
 
 class SplashScreenActivity : AppCompatActivity() {
 
-    private lateinit var splashScreenLayout: ConstraintLayout
     private lateinit var binding: ActivitySplashScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +27,8 @@ class SplashScreenActivity : AppCompatActivity() {
     private val permissionsRequesterLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
-            val activityName = if (result.all { it.value == true }) MainActivity::class.java else NoPermissionsActivity::class.java
-            changeActivity(activityName)
+        val activityName = if (result.all { it.value == true }) MainActivity::class.java else NoPermissionsActivity::class.java
+        changeActivity(activityName)
     }
 
     private fun checkPermissions() {

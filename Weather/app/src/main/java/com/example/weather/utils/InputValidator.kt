@@ -3,29 +3,29 @@ package com.example.weather.utils
 object InputValidator {
 
     fun checkInput(input: String): Boolean {
-        var result = checkIfNumbers(input)
+        var result = checkIfNotEmpty(input)
 
-        if (!result) {
-            result = checkIfSigns(input)
+        if (result) {
+            result = checkIfNoNumbers(input)
         }
 
-        if (!result) {
-            result = checkIfEmpty(input)
+        if (result) {
+            result = checkIfNoSigns(input)
         }
 
         return result
     }
 
-    private fun checkIfNumbers(input: String): Boolean {
-        return input.any { it.isDigit() }
+    private fun checkIfNoNumbers(input: String): Boolean {
+        return input.none { it.isDigit() }
     }
 
-    private fun checkIfSigns(input: String): Boolean {
+    private fun checkIfNoSigns(input: String): Boolean {
         return input.all { it.isLetter() }
     }
 
-    private fun checkIfEmpty(input: String): Boolean {
-        return input.isEmpty()
+    private fun checkIfNotEmpty(input: String): Boolean {
+        return input.isNotEmpty()
     }
 
 }

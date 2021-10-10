@@ -5,15 +5,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.weather.repositories.WeatherRepository
 import java.lang.IllegalArgumentException
 
-class WeatherForCityViewModelFactory constructor(private val repository: Any): ViewModelProvider.Factory {
+class CitiesDataViewModelFactory constructor(
+    private val repository: WeatherRepository
+): ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(WeatherForCityViewModel::class.java) -> {
-                WeatherForCityViewModel(repository as WeatherRepository) as T
+            modelClass.isAssignableFrom(CitiesDataViewModel::class.java) -> {
+                CitiesDataViewModel(repository) as T
             }
             else -> {
-                throw IllegalArgumentException("View model not found")
+                throw IllegalArgumentException("Wrong ViewModel provided")
             }
         }
     }

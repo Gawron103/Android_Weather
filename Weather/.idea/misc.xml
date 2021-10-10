@@ -3,15 +3,24 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.5463541666666667" />
+        <entry key="app/src/main/res/drawable/splash_drawable.xml" value="0.412962962962963" />
+        <entry key="app/src/main/res/drawable/splash_image.xml" value="0.5348958333333333" />
         <entry key="app/src/main/res/layout/activity_add_city.xml" value="0.5046875" />
         <entry key="app/src/main/res/layout/activity_detailed_weather.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4115107913669065" />
         <entry key="app/src/main/res/layout/activity_no_permissions.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/change_location_fragment.xml" value="0.18591691995947315" />
+        <entry key="app/src/main/res/layout/cities_list_fragment.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_add_city.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/layout/fragment_cities_list.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_cities_main_weather.xml" value="0.18591691995947315" />
         <entry key="app/src/main/res/layout/fragment_detailed_weather.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/layout/fragment_detailed_weather_for_city.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/layout/fragment_no_permissions.xml" value="0.2454407294832827" />
         <entry key="app/src/main/res/layout/fragment_permissions.xml" value="0.22282608695652173" />
+        <entry key="app/src/main/res/layout/fragment_splash_screen.xml" value="0.24722222222222223" />
         <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_predicted_weather.xml" value="0.25227963525835867" />
       </map>
