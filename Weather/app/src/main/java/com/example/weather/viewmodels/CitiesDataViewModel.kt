@@ -1,5 +1,6 @@
 package com.example.weather.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,15 +18,23 @@ class CitiesDataViewModel constructor(
     private val repository: WeatherRepository
 ): ViewModel() {
 
-    val isRequestCorrect = MutableLiveData<Boolean>()
-    val weatherLoading = MutableLiveData<Boolean>()
-    val cityExists = MutableLiveData<Boolean>()
-    var citiesLiveData = MutableLiveData<MutableList<CityModel>>()
+    private val _isRequestCorrect = MutableLiveData<Boolean>()
+    val isRequestCorrect: LiveData<Boolean>
+        get() = _isRequestCorrect
+    private val _weatherLoading = MutableLiveData<Boolean>()
+    val weatherLoading: LiveData<Boolean>
+        get() = _weatherLoading
+    private val _cityExists = MutableLiveData<Boolean>()
+    val cityExists: LiveData<Boolean>
+        get() = _cityExists
+    private var _citiesLiveData = MutableLiveData<MutableList<CityModel>>()
+    val citiesLiveData: LiveData<MutableList<CityModel>>
+        get() = _citiesLiveData
     private var citiesLists = mutableListOf<CityModel>()
 
     fun refresh() {
         viewModelScope.launch {
-            weatherLoading.value = true
+            _weatherLoading.value = true
 
             citiesLists.clear()
 
@@ -56,16 +65,16 @@ class CitiesDataViewModel constructor(
                 }
             }
 
-            citiesLiveData.value = citiesLists
-            weatherLoading.value = false
+            _citiesLiveData.value = citiesLists
+            _weatherLoading.value = false
         }
     }
 
     fun addCity(name: String) {
         viewModelScope.launch {
-            weatherLoading.value = true
-            cityExists.value = false
-            isRequestCorrect.value = true
+            _weatherLoading.value = true
+            _cityExists.value = false
+            _isRequestCorrect.value = true
 
             var weatherModel: WeatherModel? = null
             var placesModel: PlacesModel? = null
@@ -97,27 +106,27 @@ class CitiesDataViewModel constructor(
                                     )
                                 )
 
-                                citiesLiveData.postValue(citiesLists)
+                                _citiesLiveData.postValue(citiesLists)
                             }
                         }
                     } else {
-                        cityExists.value = true
+                        _cityExists.value = true
                     }
                 }
             }
             else {
-                isRequestCorrect.value = false
+                _isRequestCorrect.value = false
             }
         }
 
-        weatherLoading.value = false
+        _weatherLoading.value = false
     }
 
     fun removeCity(cityModel: CityModel) {
         viewModelScope.launch {
             citiesLists.remove(cityModel)
             removeCityFromDb(cityModel.locationModel?.get(0)?.cityName!!)
-            citiesLiveData.value = citiesLists
+            _citiesLiveData.value = citiesLists
         }
     }
 
