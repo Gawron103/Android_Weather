@@ -1,25 +1,23 @@
 package com.example.weather.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather.BuildConfig
-import com.example.weather.db.City
 import com.example.weather.models.CityModel
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
+import com.example.weather.db.CityInfo
 import com.example.weather.repositories.WeatherRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class CitiesDataViewModel constructor(
     private val repository: WeatherRepository
 ): ViewModel() {
 
+    val isRequestCorrect = MutableLiveData<Boolean>()
     val weatherLoading = MutableLiveData<Boolean>()
     val cityExists = MutableLiveData<Boolean>()
     var citiesLiveData = MutableLiveData<MutableList<CityModel>>()
@@ -31,9 +29,7 @@ class CitiesDataViewModel constructor(
 
             citiesLists.clear()
 
-            val cities = withContext(Dispatchers.IO) {
-                repository.getAllCities()
-            }
+            val cities = getAllCitiesFromDb()
 
             for (city in cities) {
                 var weatherModel: WeatherModel? = null
@@ -50,7 +46,6 @@ class CitiesDataViewModel constructor(
                         if (null != placesModel) {
                             citiesLists.add(
                                 CityModel(
-                                    city.id,
                                     weatherModel,
                                     locationModel,
                                     placesModel
@@ -70,50 +65,58 @@ class CitiesDataViewModel constructor(
         viewModelScope.launch {
             weatherLoading.value = true
             cityExists.value = false
+            isRequestCorrect.value = true
 
-            val isCityInDb = withContext(Dispatchers.IO) {
-                repository.isCityInDb(name)
-            }
+            var weatherModel: WeatherModel? = null
+            var placesModel: PlacesModel? = null
 
-            if(!isCityInDb) {
-                var weatherModel: WeatherModel? = null
-                var placesModel: PlacesModel? = null
+            val locationModel: LocationModel? = getLocationForCity(name)
 
-                val locationModel: LocationModel? = getLocationForCity(name)
-
+            if (locationModel?.isNotEmpty()!!) {
                 if (null != locationModel) {
-                    weatherModel = getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
+                    val isCityInDb = isCityInDb(
+                        locationModel[0].cityName!!.lowercase().replaceFirstChar { it.uppercase() })
 
-                    if (null != weatherModel) {
-                        placesModel = getPlaceIdForCity(name)
+                    if (!isCityInDb) {
+                        weatherModel =
+                            getWeatherForCity(locationModel[0].lat!!, locationModel[0].lon!!)
 
-                        if (null != placesModel) {
-                            val id = repository.insertToDb(City(locationModel[0].cityName!!))
+                        if (null != weatherModel) {
+                            placesModel = getPlaceIdForCity(name)
 
-                            citiesLists.add(CityModel(
-                                id,
-                                weatherModel,
-                                locationModel,
-                                placesModel
-                            ))
+                            if (null != placesModel) {
+                                val newCityName = locationModel[0].cityName!!.lowercase()
+                                    .replaceFirstChar { it.uppercase() }
+                                addCityToDb(newCityName)
 
-                            citiesLiveData.value = citiesLists
+                                citiesLists.add(
+                                    CityModel(
+                                        weatherModel,
+                                        locationModel,
+                                        placesModel
+                                    )
+                                )
+
+                                citiesLiveData.postValue(citiesLists)
+                            }
                         }
+                    } else {
+                        cityExists.value = true
                     }
                 }
             }
             else {
-                cityExists.value = true
+                isRequestCorrect.value = false
             }
-
-            weatherLoading.value = false
         }
+
+        weatherLoading.value = false
     }
 
     fun removeCity(cityModel: CityModel) {
         viewModelScope.launch {
             citiesLists.remove(cityModel)
-            repository.deleteFromDb(cityModel.idInDb!!)
+            removeCityFromDb(cityModel.locationModel?.get(0)?.cityName!!)
             citiesLiveData.value = citiesLists
         }
     }
@@ -123,15 +126,6 @@ class CitiesDataViewModel constructor(
 
         return when (locationResponse.isSuccessful) {
             true -> locationResponse.body()
-            false -> null
-        }
-    }
-
-    private suspend fun getNameForLocation(lat: Double, lon: Double): LocationModel? {
-        val coordsResponse = fetchName(lat, lon)
-
-        return when (coordsResponse.isSuccessful) {
-            true -> coordsResponse.body()
             false -> null
         }
     }
@@ -184,6 +178,22 @@ class CitiesDataViewModel constructor(
             cityName,
             BuildConfig.PLACES_API_KEY
         )
+    }
+
+    private fun addCityToDb(name: String) {
+        repository.addCity(name)
+    }
+
+    private fun removeCityFromDb(name: String) {
+        repository.deleteCity(name)
+    }
+
+    private fun isCityInDb(name: String): Boolean {
+        return repository.cityInDb(name)
+    }
+
+    private fun getAllCitiesFromDb(): MutableList<CityInfo> {
+        return repository.getCities()
     }
 
 }

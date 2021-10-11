@@ -1,14 +1,16 @@
 package com.example.weather.repositories
 
-import com.example.weather.db.City
-import com.example.weather.db.CityDAO
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
+import com.example.weather.db.CityInfo
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import java.util.*
 
 class WeatherRepository constructor(
     private val weatherService: WeatherApi,
     private val placesService: PlacesApi,
-    private val dao: CityDAO
+    private val realmConfig: RealmConfiguration
 ) {
 
     suspend fun getCoordinates(cityName: String, appKey: String) =
@@ -23,20 +25,57 @@ class WeatherRepository constructor(
     suspend fun getPlaceId(placeName: String, appKey:String) =
         placesService.getPlaceId(placeName, "textquery", "photos", appKey)
 
-    suspend fun insertToDb(city: City): Long {
-        return dao.insertCity(city)
+    fun addCity(name: String) {
+        val realm = Realm.getInstance(realmConfig)
+
+        realm.executeTransaction{ realm ->
+            val city = realm.createObject(CityInfo::class.java, UUID.randomUUID().toString())
+            city.name = name
+
+            realm.insert(city)
+        }
     }
 
-    suspend fun deleteFromDb(cityId: Long) {
-        dao.deleteCity(cityId)
+    fun deleteCity(name: String) {
+        val realm = Realm.getInstance(realmConfig)
+
+        realm.executeTransaction { realm ->
+            val city = realm
+                .where(CityInfo::class.java)
+                .equalTo("name", name)
+                .findFirst()
+
+            city?.deleteFromRealm()
+        }
     }
 
-    suspend fun isCityInDb(name: String): Boolean {
-        return dao.isCityInDb(name)
+    fun cityInDb(name: String): Boolean {
+        val realm = Realm.getInstance(realmConfig)
+        var isInDb: Boolean = false
+
+        realm.executeTransaction { realm ->
+            val city = realm
+                .where(CityInfo::class.java)
+                .equalTo("name", name)
+                .findFirst()
+
+            isInDb = null != city
+        }
+
+        return isInDb
     }
 
-    fun getAllCities(): List<City> {
-        return dao.getAllCities()
+    fun getCities(): MutableList<CityInfo> {
+        val realm = Realm.getInstance(realmConfig)
+        val cities = mutableListOf<CityInfo>()
+
+        realm.executeTransaction { realm ->
+            cities.addAll(
+                realm.where(CityInfo::class.java).findAll()
+            )
+        }
+
+        return cities
     }
 
 }

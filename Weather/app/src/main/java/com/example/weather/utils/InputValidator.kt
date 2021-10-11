@@ -21,7 +21,12 @@ object InputValidator {
     }
 
     private fun checkIfNoSigns(input: String): Boolean {
-        return input.all { it.isLetter() }
+        return input.all {
+            when (it) {
+                ' ' -> true
+                else -> it.isLetter()
+            }
+        }
     }
 
     private fun checkIfNotEmpty(input: String): Boolean {

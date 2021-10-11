@@ -2,31 +2,27 @@ package com.example.weather.views.fragments
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.R
 import com.example.weather.databinding.FragmentCitiesListBinding
-import com.example.weather.db.CityDatabase
 import com.example.weather.models.CityModel
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
+import com.example.weather.db.DbConfig
 import com.example.weather.repositories.WeatherRepository
 import com.example.weather.viewmodels.CitiesDataViewModel
 import com.example.weather.viewmodels.CitiesDataViewModelFactory
 import com.example.weather.views.adapters.CitiesListAdapter
 
 class CitiesListFragment : Fragment() {
-
-    private val TAG = "CitiesListFragment"
 
     private var _binding: FragmentCitiesListBinding? = null
     private val binding get() = _binding!!
@@ -53,10 +49,9 @@ class CitiesListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val cityDao = CityDatabase.getInstance(requireActivity()).cityDAO
         val placesService = PlacesApi.getInstance()
         val weatherService = WeatherApi.getInstance()
-        val weatherRepository = WeatherRepository(weatherService, placesService, cityDao)
+        val weatherRepository = WeatherRepository(weatherService, placesService, DbConfig.provideRealmConfig())
 
         citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity, requireContext())
 
@@ -114,9 +109,7 @@ class CitiesListFragment : Fragment() {
                 if(isLoading) {
                     binding.btnRetry.visibility = View.GONE
                     binding.tvNoCities.visibility = View.GONE
-                }
-                else {
-                    context?.setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
+                    binding.tvNoCities.visibility = View.GONE
                 }
             }
         })
@@ -124,6 +117,12 @@ class CitiesListFragment : Fragment() {
         _viewModel.cityExists.observe(requireActivity(), Observer { cityExists ->
             if (cityExists) {
                 Toast.makeText(requireActivity(), "City already exists", Toast.LENGTH_LONG).show()
+            }
+        })
+
+        _viewModel.isRequestCorrect.observe(requireActivity(), Observer { isRequestCorrect ->
+            if (!isRequestCorrect) {
+                Toast.makeText(requireActivity(), "Cannot get data for provided input", Toast.LENGTH_LONG).show()
             }
         })
     }
