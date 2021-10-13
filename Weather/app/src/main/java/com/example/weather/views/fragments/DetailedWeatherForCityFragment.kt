@@ -20,15 +20,38 @@ class DetailedWeatherForCityFragment : Fragment() {
     private var _binding: FragmentDetailedWeatherForCityBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var _weatherModel: WeatherModel
+    private lateinit var _cityName: String
+    private lateinit var _countryCode: String
+
     private val args: DetailedWeatherForCityFragmentArgs by navArgs()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        _weatherModel = args.weatherForCity
+        _cityName = args.cityName
+        _countryCode = args.countryCode
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentDetailedWeatherForCityBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+
+        binding.rvForecast.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = DetailedWeatherAdapter(_weatherModel.dailyConditions!!, context)
+        }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().navigate(R.id.action_FromDetailedWeatherToCitiesList)
+        }
+
+        updateUI()
+
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -36,35 +59,16 @@ class DetailedWeatherForCityFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    private fun updateUI() {
+        Glide.with(this).load("https://openweathermap.org/img/wn/${_weatherModel.currentConditions?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(binding.ivCityWeatherIcon)
 
-        val weatherModel = args.weatherForCity
-        val cityName = args.cityName
-        val countryCode = args.countryCode
-
-        binding.rvForecast.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = DetailedWeatherAdapter(weatherModel?.dailyConditions!!, context)
-        }
-
-        binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_FromDetailedWeatherToCitiesList)
-        }
-
-        updateUI(weatherModel, cityName, countryCode)
-    }
-
-    private fun updateUI(model: WeatherModel, cityName: String, countryCode: String) {
-        Glide.with(this).load("https://openweathermap.org/img/wn/${model?.currentConditions?.weather?.get(0)?.icon}@4x.png").error(R.drawable.error_icon).into(binding.ivCityWeatherIcon)
-
-        binding.tvCityWeatherDesc.text = model?.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
-        binding.tvCityWeatherTemp.text = round(model?.currentConditions?.temp!!).toString()
+        binding.tvCityWeatherDesc.text = _weatherModel.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
+        binding.tvCityWeatherTemp.text = round(_weatherModel.currentConditions?.temp!!).toString()
 
         val builder = StringBuilder()
-        builder.append(countryCode)
-            .append(", ")
-            .append(cityName)
+            .append(_countryCode)
+            .append(" ")
+            .append(_cityName)
 
         binding.tvCityWeatherLocation.text = builder.toString()
     }

@@ -21,18 +21,6 @@ class AddCityFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAddCityBinding.inflate(inflater, container, false)
-        val view = binding.root
-
-        return view
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         binding.btnAddCity.setOnClickListener {
             val isInputCityValid = InputValidator.checkInput(binding.etCityNameInput.text.toString())
@@ -43,7 +31,7 @@ class AddCityFragment : Fragment() {
                 findNavController().navigate(action)
             }
             else {
-                Toast.makeText(requireContext(), "Bad input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Input not valid", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -51,6 +39,12 @@ class AddCityFragment : Fragment() {
             findNavController().navigate(R.id.action_FromAddCityToCitiesList)
         }
 
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

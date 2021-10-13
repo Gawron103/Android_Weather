@@ -2,6 +2,7 @@ package com.example.weather.views.fragments
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,8 @@ import com.example.weather.views.adapters.CitiesListAdapter
 
 class CitiesListFragment : Fragment() {
 
+    private val TAG = "CitiesListFragment"
+
     private var _binding: FragmentCitiesListBinding? = null
     private val binding get() = _binding!!
 
@@ -32,22 +35,9 @@ class CitiesListFragment : Fragment() {
     private lateinit var _viewModel: CitiesDataViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentCitiesListBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate triggered")
+        super.onCreate(savedInstanceState)
 
         val placesService = PlacesApi.getInstance()
         val weatherService = WeatherApi.getInstance()
@@ -60,6 +50,21 @@ class CitiesListFragment : Fragment() {
             CitiesDataViewModelFactory(weatherRepository)
         ).get(CitiesDataViewModel::class.java)
 
+        _viewModel.refresh()
+
+        args.newCityNameArg?.let { name ->
+            Log.d(TAG, "Should add city: $name")
+            addCity(name)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        Log.d(TAG, "onCreateView triggered")
+        _binding = FragmentCitiesListBinding.inflate(inflater, container, false)
+
         binding.rvCitiesList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = citiesWeatherListAdapter
@@ -70,59 +75,40 @@ class CitiesListFragment : Fragment() {
             binding.srCitiesList.isRefreshing = false
         }
 
-        binding.btnRetry.setOnClickListener {
-//            _viewModel.refresh()
-        }
-
         binding.btnAdd.setOnClickListener {
             findNavController().navigate(R.id.action_AddCity, null)
         }
 
-        _viewModel.refresh()
-
-        args.newCityNameArg?.let { name ->
-            addCity(name)
-        }
-
         observeWeatherViewModel()
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, "onDestroyView triggered")
+        _binding = null
     }
 
     private fun observeWeatherViewModel() {
-        _viewModel.citiesLiveData.observe(requireActivity(), Observer {
-            if (true == it?.isEmpty()) {
-                citiesWeatherListAdapter.updateCities(listOf())
-                binding.tvNoCities.visibility = View.VISIBLE
-            }
-            else {
-                citiesWeatherListAdapter.updateCities(it)
-                binding.tvNoCities.visibility = View.GONE
-            }
-
-            binding.btnRetry.visibility = View.GONE
+        _viewModel.citiesLiveData.observe(requireActivity(), Observer { cities ->
+            binding.tvNoCities.visibility = if (cities.isEmpty()) View.VISIBLE else View.GONE
+            citiesWeatherListAdapter.updateCities(cities)
         })
 
         _viewModel.weatherLoading.observe(requireActivity(), Observer { isLoading ->
-            isLoading?.let {
-                binding.pbLoading.visibility = if(isLoading) View.VISIBLE else View.GONE
-                binding.btnAdd.visibility = if (isLoading) View.GONE else View.VISIBLE
-
-                if(isLoading) {
-                    binding.btnRetry.visibility = View.GONE
-                    binding.tvNoCities.visibility = View.GONE
-                    binding.tvNoCities.visibility = View.GONE
-                }
-            }
+            binding.pbLoading.visibility = if(isLoading) View.VISIBLE else View.GONE
+            binding.tvNoCities.visibility = View.GONE
         })
 
-        _viewModel.cityExists.observe(requireActivity(), Observer { cityExists ->
-            if (cityExists) {
-                Toast.makeText(requireActivity(), "City already exists", Toast.LENGTH_LONG).show()
-            }
+        _viewModel.cityAdded.observe(requireActivity(), Observer { cityAdded ->
+            val message = if (cityAdded) "New city added" else "City already exists"
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
         })
 
         _viewModel.isRequestCorrect.observe(requireActivity(), Observer { isRequestCorrect ->
             if (!isRequestCorrect) {
-                Toast.makeText(requireActivity(), "Cannot get data for provided input", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireActivity(), "Wrong input", Toast.LENGTH_LONG).show()
             }
         })
     }

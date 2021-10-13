@@ -18,9 +18,9 @@ class CitiesDataViewModel constructor(
     private val _weatherLoading = MutableLiveData<Boolean>()
     val weatherLoading: LiveData<Boolean>
         get() = _weatherLoading
-    private val _cityExists = MutableLiveData<Boolean>()
-    val cityExists: LiveData<Boolean>
-        get() = _cityExists
+    private val _cityAdded = MutableLiveData<Boolean>()
+    val cityAdded: LiveData<Boolean>
+        get() = _cityAdded
     private var _citiesLiveData = MutableLiveData<MutableList<CityModel>>()
     val citiesLiveData: LiveData<MutableList<CityModel>>
         get() = _citiesLiveData
@@ -57,7 +57,6 @@ class CitiesDataViewModel constructor(
     fun addCity(name: String) {
         viewModelScope.launch {
             _weatherLoading.value = true
-            _cityExists.value = false
             _isRequestCorrect.value = true
 
             repository.getCoordinates(name)?.let { location ->
@@ -76,7 +75,7 @@ class CitiesDataViewModel constructor(
                         }
                     }
                     else {
-                        _cityExists.value = false
+                        _cityAdded.value = false
                         null
                     }
                 }
@@ -84,9 +83,11 @@ class CitiesDataViewModel constructor(
                     _isRequestCorrect.value = false
                     null
                 }
-            }?.run {
-                repository.addCity(locationModel?.get(0)?.cityName!!)
-                citiesLists.add(this)
+            }?.let { city ->
+                repository.addCity(city.locationModel?.get(0)?.cityName!!)
+                citiesLists.add(city)
+                _citiesLiveData.value = citiesLists
+                _cityAdded.value = true
             }
 
             _weatherLoading.value = false
