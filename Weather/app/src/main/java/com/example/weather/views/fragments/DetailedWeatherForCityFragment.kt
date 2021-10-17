@@ -1,6 +1,7 @@
 package com.example.weather.views.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,8 @@ import com.example.weather.views.adapters.DetailedWeatherAdapter
 import kotlin.math.round
 
 class DetailedWeatherForCityFragment : Fragment() {
+
+    private val TAG = "DetailedWeatherForCityFragment"
 
     private var _binding: FragmentDetailedWeatherForCityBinding? = null
     private val binding get() = _binding!!
@@ -46,8 +49,11 @@ class DetailedWeatherForCityFragment : Fragment() {
         }
 
         binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_FromDetailedWeatherToCitiesList)
+            findNavController().popBackStack()
+//            Log.d(TAG, "Backstack: ${findNavController().backStack.javaClass}")
         }
+
+        Log.d(TAG, "NavStack: ${findNavController().backStack}")
 
         updateUI()
 

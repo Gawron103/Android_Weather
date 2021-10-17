@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation"
+    android:id="@+id/cities_list_navigation"
     app:startDestination="@id/citiesListFragment">
 
     <fragment
@@ -11,18 +11,19 @@
         android:label="fragment_cities_list"
         tools:layout="@layout/fragment_cities_list" >
         <action
-            android:id="@+id/action_AddCity"
+            android:id="@+id/action_citiesListFragment_to_addCityFragment"
             app:destination="@id/addCityFragment"
-            app:popUpToInclusive="false">
-        </action>
+            app:popUpTo="@id/citiesListFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_citiesListFragment_to_detailedWeatherForCityFragment"
+            app:destination="@id/detailedWeatherForCityFragment"
+            app:popUpTo="@id/citiesListFragment" />
         <argument
-            android:name="newCityNameArg"
+            android:name="newCity"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_DetailsForCity"
-            app:destination="@id/detailedWeatherForCityFragment" />
     </fragment>
     <fragment
         android:id="@+id/addCityFragment"
@@ -30,21 +31,16 @@
         android:label="fragment_add_city"
         tools:layout="@layout/fragment_add_city" >
         <action
-            android:id="@+id/action_FromAddCityToCitiesList"
+            android:id="@+id/action_addCityFragment_to_citiesListFragment"
             app:destination="@id/citiesListFragment"
             app:popUpTo="@id/citiesListFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"></action>
     </fragment>
     <fragment
         android:id="@+id/detailedWeatherForCityFragment"
         android:name="com.example.weather.views.fragments.DetailedWeatherForCityFragment"
         android:label="fragment_detailed_weather_for_city"
         tools:layout="@layout/fragment_detailed_weather_for_city" >
-        <action
-            android:id="@+id/action_FromDetailedWeatherToCitiesList"
-            app:destination="@id/citiesListFragment"
-            app:popUpTo="@id/citiesListFragment"
-            app:popUpToInclusive="true" />
         <argument
             android:name="cityName"
             app:argType="string" />

@@ -56,11 +56,16 @@ class CitiesListAdapter(
             }
 
             itemView.setOnClickListener {
-                val action = CitiesListFragmentDirections.actionDetailsForCity(
+                val action = CitiesListFragmentDirections.actionCitiesListFragmentToDetailedWeatherForCityFragment(
                     cityModel.locationModel?.get(0)?.cityName!!,
                     cityModel.locationModel[0].countryCode!!,
                     cityModel.weatherModel,
                 )
+//                val action = CitiesListFragmentDirections.actionDetailsForCity(
+//                    cityModel.locationModel?.get(0)?.cityName!!,
+//                    cityModel.locationModel[0].countryCode!!,
+//                    cityModel.weatherModel,
+//                )
 
                 it.findNavController().navigate(action)
             }

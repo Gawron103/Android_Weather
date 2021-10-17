@@ -1,17 +1,21 @@
 package com.example.weather.views.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.example.weather.R
 import com.example.weather.databinding.FragmentAddCityBinding
 import com.example.weather.utils.InputValidator
 
 class AddCityFragment : Fragment() {
+
+    private val TAG = "AddCityFragment"
 
     private var _binding: FragmentAddCityBinding? = null
     private val binding get() = _binding!!
@@ -25,7 +29,7 @@ class AddCityFragment : Fragment() {
         binding.btnAddCity.setOnClickListener {
             val isInputCityValid = InputValidator.checkInput(binding.etCityNameInput.text.toString())
             if (isInputCityValid) {
-                val action = AddCityFragmentDirections.actionFromAddCityToCitiesList(
+                val action = AddCityFragmentDirections.actionAddCityFragmentToCitiesListFragment(
                     binding.etCityNameInput.text.toString()
                 )
                 findNavController().navigate(action)
@@ -36,8 +40,10 @@ class AddCityFragment : Fragment() {
         }
 
         binding.btnBackToCitiesView.setOnClickListener {
-            findNavController().navigate(R.id.action_FromAddCityToCitiesList)
+            findNavController().popBackStack()
         }
+
+        Log.d(TAG, "NavStack: ${findNavController().backStack}")
 
         return binding.root
     }

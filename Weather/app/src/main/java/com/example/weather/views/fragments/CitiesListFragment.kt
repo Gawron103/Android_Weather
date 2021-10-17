@@ -27,10 +27,10 @@ class CitiesListFragment : Fragment() {
 
     private val TAG = "CitiesListFragment"
 
+    val args: CitiesListFragmentArgs by navArgs()
+
     private var _binding: FragmentCitiesListBinding? = null
     private val binding get() = _binding!!
-
-    private val args: CitiesListFragmentArgs by navArgs()
 
     private lateinit var _viewModel: CitiesDataViewModel
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
@@ -51,8 +51,8 @@ class CitiesListFragment : Fragment() {
         ).get(CitiesDataViewModel::class.java)
 
         _viewModel.refresh()
-
-        args.newCityNameArg?.let { name ->
+        
+        args.newCity?.let { name ->
             Log.d(TAG, "Should add city: $name")
             addCity(name)
         }
@@ -76,10 +76,12 @@ class CitiesListFragment : Fragment() {
         }
 
         binding.btnAdd.setOnClickListener {
-            findNavController().navigate(R.id.action_AddCity, null)
+            findNavController().navigate(R.id.action_citiesListFragment_to_addCityFragment)
         }
 
         observeWeatherViewModel()
+
+        Log.d(TAG, "NavStack: ${findNavController().backStack}")
 
         return binding.root
     }
