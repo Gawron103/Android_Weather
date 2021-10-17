@@ -11,7 +11,6 @@ object DbConfig {
         RealmConfiguration.Builder()
             .name(dbName)
             .schemaVersion(realmVersion)
-            .allowWritesOnUiThread(true)
             .deleteRealmIfMigrationNeeded()
             .build()
 
