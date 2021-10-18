@@ -46,6 +46,14 @@ class WeatherRepository constructor(
         }
     }
 
+    suspend fun getNameForLocation(lat: Double, lon: Double): LocationModel? {
+        val response = weatherService.getNameForLocation(lat, lon, BuildConfig.WEATHER_API_KEY)
+
+        return when (response.isSuccessful) {
+            true -> response.body()
+            else -> null
+        }
+    }
 
     fun addCity(name: String) {
         val realm = Realm.getInstance(realmConfig)
