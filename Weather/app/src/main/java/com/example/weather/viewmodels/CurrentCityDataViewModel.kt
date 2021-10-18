@@ -22,16 +22,13 @@ class CurrentCityDataViewModel constructor(
     val cityModel: LiveData<CityModel>
         get() = _cityModel
 
-    fun refresh() {
+    fun refresh(lat: Double, lon: Double) {
         viewModelScope.launch {
             Log.d(TAG, "Current city refresh triggered")
             _isLoading.value = true
 
-            val latMock: Double = 51.509
-            val lonMock: Double = -0.1180
-
-            repository.getWeather(latMock, lonMock)?.let { weather ->
-                repository.getNameForLocation(latMock, lonMock)?.let { location ->
+            repository.getWeather(lat, lon)?.let { weather ->
+                repository.getNameForLocation(lat, lon)?.let { location ->
                     Log.d(TAG, location.toString())
                     repository.getPlaceId(location[0].cityName!!)?.let { places ->
                         CityModel(
