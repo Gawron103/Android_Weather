@@ -4,8 +4,8 @@ import io.realm.RealmConfiguration
 
 object DbConfig {
 
-    private val realmVersion = 2L
-    private val dbName = "cities_db.db"
+    private const val realmVersion = 2L
+    private const val dbName = "cities_db.db"
 
     fun provideRealmConfig(): RealmConfiguration =
         RealmConfiguration.Builder()

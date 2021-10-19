@@ -51,12 +51,8 @@ class CurrentLocationFragment : Fragment() {
             CurrentCityDataViewModelFactory(weatherRepository)
         ).get(CurrentCityDataViewModel::class.java)
 
-//        val locationUtils = LocationUtils()
-//        locationUtils.getLocation(requireContext())
-
         _fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         getLocation()
-//        _viewModel.refresh()
     }
 
     override fun onCreateView(
@@ -71,10 +67,12 @@ class CurrentLocationFragment : Fragment() {
         }
 
         binding.slCurrentLocation.setOnRefreshListener {
-            Log.d(TAG, "Refreshing current weather")
-//            _viewModel.refresh()
+            getLocation()
             binding.slCurrentLocation.isRefreshing = false
         }
+
+        binding.cardView2.visibility = View.GONE
+        binding.rvForecast.visibility = View.GONE
 
         observeViewModel()
 
@@ -87,8 +85,17 @@ class CurrentLocationFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        _viewModel.isLoading.observe(requireActivity(), Observer { isLoading ->
-            binding.pbLoadingCurrentLocation.visibility = if (isLoading) View.VISIBLE else View.GONE
+        _viewModel.isLoadingWeather.observe(requireActivity(), Observer { isLoading ->
+            if (isLoading) {
+                binding.pbLoadingWeatherForLocation.visibility = View.VISIBLE
+                binding.cardView2.visibility = View.GONE
+                binding.rvForecast.visibility = View.GONE
+            }
+            else {
+                binding.pbLoadingWeatherForLocation.visibility = View.GONE
+                binding.cardView2.visibility = View.VISIBLE
+                binding.rvForecast.visibility = View.VISIBLE
+            }
         })
 
         _viewModel.cityModel.observe(requireActivity(), Observer { model ->
@@ -142,4 +149,6 @@ class CurrentLocationFragment : Fragment() {
             _viewModel.refresh(lastLocation.latitude, lastLocation.longitude)
         }
     }
+
+
 }

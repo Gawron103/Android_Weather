@@ -15,9 +15,9 @@ class CurrentCityDataViewModel constructor(
 
     private val TAG = "CurrentCityDataViewModel"
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    private val _isLoadingWeather = MutableLiveData<Boolean>()
+    val isLoadingWeather: LiveData<Boolean>
+        get() = _isLoadingWeather
     private val _cityModel = MutableLiveData<CityModel>()
     val cityModel: LiveData<CityModel>
         get() = _cityModel
@@ -25,7 +25,7 @@ class CurrentCityDataViewModel constructor(
     fun refresh(lat: Double, lon: Double) {
         viewModelScope.launch {
             Log.d(TAG, "Current city refresh triggered")
-            _isLoading.value = true
+            _isLoadingWeather.value = true
 
             repository.getWeather(lat, lon)?.let { weather ->
                 repository.getNameForLocation(lat, lon)?.let { location ->
@@ -42,7 +42,7 @@ class CurrentCityDataViewModel constructor(
                 _cityModel.value = model
             }
 
-            _isLoading.value = false
+            _isLoadingWeather.value = false
         }
     }
 
@@ -51,13 +51,10 @@ class CurrentCityDataViewModel constructor(
     fun getTemperature() = _cityModel.value?.weatherModel?.currentConditions?.temp
     fun getWeatherDesc() = _cityModel.value?.weatherModel?.currentConditions?.weather?.get(0)?.desc
     fun getPhotoRef() = _cityModel.value?.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference
-    fun getLocationName(): String {
-        val builder = StringBuilder()
+    fun getLocationName() = StringBuilder()
             .append(_cityModel.value?.locationModel?.get(0)?.countryCode)
             .append(", ")
             .append(_cityModel.value?.locationModel?.get(0)?.cityName)
-
-        return builder.toString()
-    }
+            .toString()
 
 }

@@ -9,6 +9,4 @@ object Const {
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    const val CURRENT_LOCATION_POSITION = 0
-
 }

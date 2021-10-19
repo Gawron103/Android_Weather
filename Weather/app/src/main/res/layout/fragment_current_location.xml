@@ -9,8 +9,20 @@
     tools:context=".views.fragments.CurrentLocationFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_CurrentLocationWeather"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/pb_LoadingWeatherForLocation"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationZ="90dp"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_forecast"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView2"
@@ -20,14 +32,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline18"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:shadowColor="#000000"
             android:shadowRadius="15"
             app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_LocationImage"
@@ -40,6 +52,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.4" />
+
                 <TextView
                     android:id="@+id/tv_weatherDescription"
                     android:layout_width="wrap_content"
@@ -47,15 +66,15 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
+                    android:shadowColor="#000000"
+                    android:shadowRadius="10"
                     android:text="TextView"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/guideline12"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-                    android:shadowColor="#000000"
-                    android:shadowRadius="10" />
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout3"
@@ -83,12 +102,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="TextView"
                         android:textColor="#FFFFFF"
                         android:textSize="48sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -107,35 +126,35 @@
                         android:id="@+id/tv_latitudeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="Latitude: "
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_latitudeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="TextView"
                         android:textAllCaps="false"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textView8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="\u00B0"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -154,35 +173,35 @@
                         android:id="@+id/tv_longitudeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="Longitude: "
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_longitudeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="TextView"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textView9"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="\u00B0"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -204,23 +223,23 @@
                         android:id="@+id/tv_temperature"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="TextView"
                         android:textColor="#FFFFFF"
                         android:textSize="48sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_tempSign"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:shadowColor="#000000"
+                        android:shadowRadius="10"
                         android:text="\u00B0"
                         android:textColor="#FFFFFF"
                         android:textSize="48sp"
-                        android:textStyle="bold"
-                        android:shadowColor="#000000"
-                        android:shadowRadius="10" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.Guideline
@@ -237,16 +256,16 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent="0.05" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.4" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_forecast"
@@ -260,23 +279,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline18" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline18"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <ProgressBar
-            android:id="@+id/pb_LoadingCurrentLocation"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/rv_forecast" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
