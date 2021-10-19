@@ -1,8 +1,11 @@
 package com.example.weather.networking
 
 import com.example.weather.models.places_model.PlacesModel
+import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -10,12 +13,12 @@ import retrofit2.http.Query
 interface PlacesApi {
 
     @GET("/maps/api/place/findplacefromtext/json")
-    suspend fun getPlaceId(
+    fun getPlaceId(
         @Query("input") cityName: String,
         @Query("inputtype") inputType: String,
         @Query("fields") fields: String,
         @Query("key") appKey: String
-    ): Response<PlacesModel>
+    ): Observable<PlacesModel>
 
     companion object {
         private var placesService: PlacesApi? = null
@@ -26,6 +29,7 @@ interface PlacesApi {
                 placesService = Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()
                     .create(PlacesApi::class.java)
             }
