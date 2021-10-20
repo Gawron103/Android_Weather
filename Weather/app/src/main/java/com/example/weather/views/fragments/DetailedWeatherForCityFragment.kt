@@ -27,14 +27,14 @@ class DetailedWeatherForCityFragment : Fragment() {
     private lateinit var _cityName: String
     private lateinit var _countryCode: String
 
-    private val args: DetailedWeatherForCityFragmentArgs by navArgs()
+    private val _args: DetailedWeatherForCityFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        _weatherModel = args.weatherForCity
-        _cityName = args.cityName
-        _countryCode = args.countryCode
+        _weatherModel = _args.weatherForCity
+        _cityName = _args.cityName
+        _countryCode = _args.countryCode
     }
 
     override fun onCreateView(
@@ -50,7 +50,6 @@ class DetailedWeatherForCityFragment : Fragment() {
 
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
-//            Log.d(TAG, "Backstack: ${findNavController().backStack.javaClass}")
         }
 
         Log.d(TAG, "NavStack: ${findNavController().backStack}")
@@ -70,13 +69,10 @@ class DetailedWeatherForCityFragment : Fragment() {
 
         binding.tvCityWeatherDesc.text = _weatherModel.currentConditions?.weather?.get(0)?.desc?.replaceFirstChar { it.uppercase() }
         binding.tvCityWeatherTemp.text = round(_weatherModel.currentConditions?.temp!!).toString()
-
-        val builder = StringBuilder()
+        binding.tvCityWeatherLocation.text = StringBuilder()
             .append(_countryCode)
             .append(" ")
-            .append(_cityName)
-
-        binding.tvCityWeatherLocation.text = builder.toString()
+            .append(_cityName).toString()
     }
 
 }

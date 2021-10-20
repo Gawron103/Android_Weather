@@ -4,10 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.weather.models.CityModel
 import com.example.weather.repositories.WeatherRepository
-import kotlinx.coroutines.launch
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class CurrentCityDataViewModel constructor(
     private val repository: WeatherRepository
@@ -22,28 +23,41 @@ class CurrentCityDataViewModel constructor(
     val cityModel: LiveData<CityModel>
         get() = _cityModel
 
-    fun refresh(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            Log.d(TAG, "Current city refresh triggered")
-            _isLoadingWeather.value = true
+    private val _compositeDisposable = CompositeDisposable()
 
-            repository.getWeather(lat, lon)?.let { weather ->
-                repository.getNameForLocation(lat, lon)?.let { location ->
-                    Log.d(TAG, location.toString())
-                    repository.getPlaceId(location[0].cityName!!)?.let { places ->
+    fun refresh(lat: Double, lon: Double) {
+        _isLoadingWeather.value = true
+
+        val disposable = repository.getNameForLocation(lat, lon)
+            .flatMap { location ->
+                repository.getWeather(lat, lon)
+                    .map { location to it }
+            }
+            .flatMap { (location, weather) ->
+                repository.getPlaceId(location[0].cityName!!)
+                    .map { places ->
                         CityModel(
                             weather,
                             location,
                             places
                         )
                     }
-                }
-            }?.let { model ->
-                _cityModel.value = model
             }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { model ->
+                    _cityModel.value = model
+                },
+                { error ->
+                    Log.d(TAG, "Error appeared. Error: $error")
+                },
+                {
+                    _isLoadingWeather.value = false
+                }
+            )
 
-            _isLoadingWeather.value = false
-        }
+        _compositeDisposable.add(disposable)
     }
 
     fun getLatitude() = _cityModel.value?.locationModel?.get(0)?.lat

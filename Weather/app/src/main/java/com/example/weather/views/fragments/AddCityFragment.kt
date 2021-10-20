@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import com.example.weather.R
 import com.example.weather.databinding.FragmentAddCityBinding
 import com.example.weather.utils.InputValidator
 
@@ -35,7 +33,7 @@ class AddCityFragment : Fragment() {
                 findNavController().navigate(action)
             }
             else {
-                Toast.makeText(requireContext(), "Input not valid", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Wrong input", Toast.LENGTH_SHORT).show()
             }
         }
 

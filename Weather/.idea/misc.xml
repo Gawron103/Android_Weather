@@ -30,6 +30,7 @@
         <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_forecast_current_location.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/item_predicted_weather.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/menu/nav_drawer_menu.xml" value="0.51875" />
       </map>
     </option>
   </component>

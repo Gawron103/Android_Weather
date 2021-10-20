@@ -3,12 +3,10 @@ package com.example.weather.views.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -26,8 +24,6 @@ import com.google.android.gms.location.*
 import kotlin.math.round
 
 class CurrentLocationFragment : Fragment() {
-
-    private val TAG = "CurrentLocationFragment"
 
     private var _binding: FragmentCurrentLocationBinding? = null
     private val binding get() = _binding!!
@@ -85,21 +81,14 @@ class CurrentLocationFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        _viewModel.isLoadingWeather.observe(requireActivity(), Observer { isLoading ->
-            if (isLoading) {
-                binding.pbLoadingWeatherForLocation.visibility = View.VISIBLE
-                binding.cardView2.visibility = View.GONE
-                binding.rvForecast.visibility = View.GONE
-            }
-            else {
-                binding.pbLoadingWeatherForLocation.visibility = View.GONE
-                binding.cardView2.visibility = View.VISIBLE
-                binding.rvForecast.visibility = View.VISIBLE
-            }
+        _viewModel.isLoadingWeather.observe(requireActivity(), { isLoading ->
+            binding.pbLoadingWeatherForLocation.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.cardView2.visibility = if (isLoading) View.GONE else View.VISIBLE
+            binding.rvForecast.visibility = if (isLoading) View.GONE else View.VISIBLE
         })
 
-        _viewModel.cityModel.observe(requireActivity(), Observer { model ->
-            _forecastAdapter.updateForecast(model?.weatherModel?.dailyConditions!!)
+        _viewModel.cityModel.observe(requireActivity(), { model ->
+            _forecastAdapter.updateForecast(model.weatherModel?.dailyConditions!!)
             updateUI()
         })
     }
@@ -119,8 +108,6 @@ class CurrentLocationFragment : Fragment() {
     private fun getLocation() {
         _fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
-                Log.d(TAG, "Latitude: ${location.latitude.toString()}")
-                Log.d(TAG, "Longitude: ${location.longitude.toString()}")
                 _viewModel.refresh(location.latitude, location.longitude)
             } ?: requestNewLocationData()
         }
@@ -135,7 +122,6 @@ class CurrentLocationFragment : Fragment() {
             numUpdates = 1
         }
 
-        _fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         _fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -149,6 +135,5 @@ class CurrentLocationFragment : Fragment() {
             _viewModel.refresh(lastLocation.latitude, lastLocation.longitude)
         }
     }
-
 
 }

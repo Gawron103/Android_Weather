@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +26,7 @@ class CitiesListFragment : Fragment() {
 
     private val TAG = "CitiesListFragment"
 
-    val args: CitiesListFragmentArgs by navArgs()
+    private val args: CitiesListFragmentArgs by navArgs()
 
     private var _binding: FragmentCitiesListBinding? = null
     private val binding get() = _binding!!
@@ -36,7 +35,6 @@ class CitiesListFragment : Fragment() {
     private lateinit var citiesWeatherListAdapter: CitiesListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate triggered")
         super.onCreate(savedInstanceState)
 
         val placesService = PlacesApi.getInstance()
@@ -50,19 +48,15 @@ class CitiesListFragment : Fragment() {
             CitiesDataViewModelFactory(weatherRepository)
         ).get(CitiesDataViewModel::class.java)
 
-        _viewModel.refresh()
-        
         args.newCity?.let { name ->
-            Log.d(TAG, "Should add city: $name")
             addCity(name)
-        }
+        } ?: _viewModel.refresh()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView triggered")
         _binding = FragmentCitiesListBinding.inflate(inflater, container, false)
 
         binding.rvCitiesList.apply {
@@ -88,30 +82,28 @@ class CitiesListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d(TAG, "onDestroyView triggered")
         _binding = null
     }
 
     private fun observeWeatherViewModel() {
-        _viewModel.citiesLiveData.observe(requireActivity(), Observer { cities ->
-            binding.tvNoCities.visibility = if (cities.isEmpty()) View.VISIBLE else View.GONE
+        _viewModel.citiesLiveData.observe(requireActivity(), { cities ->
             citiesWeatherListAdapter.updateCities(cities)
         })
 
-        _viewModel.weatherLoading.observe(requireActivity(), Observer { isLoading ->
-            binding.pbLoading.visibility = if(isLoading) View.VISIBLE else View.GONE
-            binding.tvNoCities.visibility = View.GONE
+        _viewModel.weatherLoading.observe(requireActivity(), { isLoading ->
+            binding.pbLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
+                binding.rvCitiesList.visibility = if (isLoading) View.GONE else View.VISIBLE
+                binding.btnAdd.visibility = if (isLoading) View.GONE else View.VISIBLE
         })
 
-        _viewModel.cityAdded.observe(requireActivity(), Observer { cityAdded ->
+        _viewModel.cityAdded.observe(requireActivity(), { cityAdded ->
             val message = if (cityAdded) "New city added" else "City already exists"
             Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
         })
 
-        _viewModel.isRequestCorrect.observe(requireActivity(), Observer { isRequestCorrect ->
-            if (!isRequestCorrect) {
-                Toast.makeText(requireActivity(), "Wrong input", Toast.LENGTH_LONG).show()
-            }
+        _viewModel.cityDeleted.observe(requireActivity(), { cityDeleted ->
+            val message = if (cityDeleted) "City deleted" else "Cannot delete the city"
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
         })
     }
 

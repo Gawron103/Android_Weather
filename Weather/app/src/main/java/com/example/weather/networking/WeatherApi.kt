@@ -3,8 +3,6 @@ package com.example.weather.networking
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import io.reactivex.Observable
-import io.reactivex.Single
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,11 +27,11 @@ interface WeatherApi {
     ): Observable<LocationModel>
 
     @GET("geo/1.0/reverse")
-    suspend fun getNameForLocation(
+    fun getNameForLocation(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("appid") appKey: String
-    ): Response<LocationModel>
+    ): Observable<LocationModel>
 
 
     companion object {
