@@ -9,7 +9,11 @@
         android:id="@+id/viewPagerFragment"
         android:name="com.example.weather.views.fragments.ViewPagerFragment"
         android:label="fragment_view_pager"
-        tools:layout="@layout/fragment_view_pager" />
+        tools:layout="@layout/fragment_view_pager" >
+        <action
+            android:id="@+id/action_viewPagerFragment_to_noPermissionsFragment"
+            app:destination="@id/noPermissionsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.weather.views.fragments.LoginFragment"
@@ -42,9 +46,10 @@
         android:id="@+id/registerFragment"
         android:name="com.example.weather.views.fragments.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" >
-        <action
-            android:id="@+id/action_registerFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_register" />
+    <fragment
+        android:id="@+id/noPermissionsFragment"
+        android:name="com.example.weather.views.fragments.NoPermissionsFragment"
+        android:label="fragment_no_permissions"
+        tools:layout="@layout/fragment_no_permissions" />
 </navigation>

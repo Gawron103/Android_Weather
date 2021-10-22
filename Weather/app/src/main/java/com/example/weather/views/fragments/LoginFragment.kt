@@ -34,6 +34,8 @@ class LoginFragment : Fragment() {
     ): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
+        binding.pbLogging.visibility = View.GONE
+
         binding.btnLogin.setOnClickListener {
             login(
                 binding.etEmail.text.toString().trim(),
@@ -57,22 +59,30 @@ class LoginFragment : Fragment() {
     }
 
     private fun login(email: String, password: String) {
+        binding.pbLogging.visibility = View.VISIBLE
+        binding.cvLoginInput.visibility = View.GONE
+
         _auth?.let { auth ->
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(requireContext(), "User logged in successfully", Toast.LENGTH_LONG).show()
+                            binding.pbLogging.visibility = View.GONE
                             findNavController().navigate(R.id.action_loginFragment_to_viewPagerFragment)
                         }
                         else {
                             Toast.makeText(requireContext(), "Wrong email or password", Toast.LENGTH_LONG).show()
                             Log.d(TAG, "Exception: ${task.exception}")
+                            binding.pbLogging.visibility = View.GONE
+                            binding.cvLoginInput.visibility = View.VISIBLE
                         }
                     }
             }
             else {
                 Toast.makeText(requireContext(), "Wrong input", Toast.LENGTH_LONG).show()
+                binding.pbLogging.visibility = View.GONE
+                binding.cvLoginInput.visibility = View.VISIBLE
             }
         }
     }

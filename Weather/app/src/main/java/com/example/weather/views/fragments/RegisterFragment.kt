@@ -10,7 +10,10 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.weather.R
 import com.example.weather.databinding.FragmentRegisterBinding
+import com.example.weather.db.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class RegisterFragment : Fragment() {
 
@@ -19,12 +22,15 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
-    private var _auth: FirebaseAuth? = null
+    private lateinit var _auth: FirebaseAuth
+    private lateinit var _databaseInst: FirebaseDatabase
+    private lateinit var _databaseRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         _auth = FirebaseAuth.getInstance()
+        _databaseInst = FirebaseDatabase.getInstance()
     }
 
     override fun onCreateView(
@@ -35,8 +41,7 @@ class RegisterFragment : Fragment() {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
         binding.btnBack.setOnClickListener {
-            val res = findNavController().popBackStack()
-            Log.d(TAG, "back clicked. Res: $res")
+            findNavController().popBackStack()
         }
 
         binding.btnRegister.setOnClickListener {
@@ -58,27 +63,41 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registerUser(name: String, email: String, password: String) {
-        Log.d(TAG, "email: $email")
-        Log.d(TAG, "password: $password")
+        if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+            _auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(
+                            requireContext(),
+                            "User created successfully",
+                            Toast.LENGTH_LONG
+                        ).show()
 
-        _auth?.let { auth ->
-            if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_LONG).show()
-                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-                        }
-                        else {
-                            Toast.makeText(requireContext(), "User creation failed", Toast.LENGTH_LONG).show()
-                            Log.d(TAG, "Exception: ${task.exception}")
-                        }
+                        saveUserInDb()
+                        findNavController().popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(), "User creation failed", Toast.LENGTH_LONG)
+                            .show()
+                        Log.d(TAG, "Exception: ${task.exception}")
                     }
-            }
-            else {
-                Toast.makeText(requireContext(), "Wrong input", Toast.LENGTH_LONG).show()
-            }
+                }
+        }
+        else {
+            Toast.makeText(requireContext(), "Wrong input", Toast.LENGTH_LONG).show()
         }
     }
 
+    private fun saveUserInDb() {
+        /* add node for user in DB */
+        _databaseRef = _databaseInst.getReference("users")
+
+        /* add user to DB */
+        val userId = _auth.currentUser?.uid
+        val user = User(
+            _auth.currentUser?.email!!,
+            listOf()
+        )
+
+        _databaseRef.child(userId!!).setValue(user)
+    }
 }

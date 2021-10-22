@@ -16,7 +16,6 @@ import com.example.weather.databinding.FragmentCitiesListBinding
 import com.example.weather.models.CityModel
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
-import com.example.weather.db.DbConfig
 import com.example.weather.repositories.WeatherRepository
 import com.example.weather.viewmodels.CitiesDataViewModel
 import com.example.weather.viewmodels.CitiesDataViewModelFactory
@@ -39,7 +38,7 @@ class CitiesListFragment : Fragment() {
 
         val placesService = PlacesApi.getInstance()
         val weatherService = WeatherApi.getInstance()
-        val weatherRepository = WeatherRepository(weatherService, placesService, DbConfig.provideRealmConfig())
+        val weatherRepository = WeatherRepository(weatherService, placesService)
 
         citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity, requireContext())
 

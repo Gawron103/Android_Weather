@@ -3,6 +3,7 @@ package com.example.weather.views.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import com.bumptech.glide.Glide
 import com.example.weather.BuildConfig
 import com.example.weather.R
 import com.example.weather.databinding.FragmentCurrentLocationBinding
-import com.example.weather.db.DbConfig
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
 import com.example.weather.repositories.WeatherRepository
@@ -24,6 +24,8 @@ import com.google.android.gms.location.*
 import kotlin.math.round
 
 class CurrentLocationFragment : Fragment() {
+
+    private val TAG = "CurrentLocationFragment"
 
     private var _binding: FragmentCurrentLocationBinding? = null
     private val binding get() = _binding!!
@@ -38,7 +40,7 @@ class CurrentLocationFragment : Fragment() {
 
         val placesService = PlacesApi.getInstance()
         val weatherService = WeatherApi.getInstance()
-        val weatherRepository = WeatherRepository(weatherService, placesService, DbConfig.provideRealmConfig())
+        val weatherRepository = WeatherRepository(weatherService, placesService)
 
         _forecastAdapter = CurrentLocationForecastAdapter(arrayListOf(), requireContext())
 

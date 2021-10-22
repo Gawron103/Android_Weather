@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.weather.models.CityModel
 import com.example.weather.repositories.WeatherRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CurrentCityDataViewModel constructor(
     private val repository: WeatherRepository
@@ -23,41 +26,20 @@ class CurrentCityDataViewModel constructor(
     val cityModel: LiveData<CityModel>
         get() = _cityModel
 
-    private val _compositeDisposable = CompositeDisposable()
-
     fun refresh(lat: Double, lon: Double) {
-        _isLoadingWeather.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoadingWeather.postValue(true)
 
-        val disposable = repository.getNameForLocation(lat, lon)
-            .flatMap { location ->
-                repository.getWeather(lat, lon)
-                    .map { location to it }
-            }
-            .flatMap { (location, weather) ->
-                repository.getPlaceId(location[0].cityName!!)
-                    .map { places ->
-                        CityModel(
-                            weather,
-                            location,
-                            places
-                        )
-                    }
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { model ->
-                    _cityModel.value = model
-                },
-                { error ->
-                    Log.d(TAG, "Error appeared. Error: $error")
-                },
-                {
-                    _isLoadingWeather.value = false
-                }
-            )
+            val location = repository.getNameForLocation(lat, lon)
+            val weather = repository.getWeather(location[0].lat!!, location[0].lon!!)
+            val places = repository.getPlaceId(location[0].cityName!!)
 
-        _compositeDisposable.add(disposable)
+            Log.d(TAG, "Refresh running on thread: ${Thread.currentThread()}")
+
+            _cityModel.postValue(CityModel(weather, location, places))
+
+            _isLoadingWeather.postValue(false)
+        }
     }
 
     fun getLatitude() = _cityModel.value?.locationModel?.get(0)?.lat

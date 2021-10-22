@@ -1,17 +1,29 @@
 package com.example.weather.views.fragments
 
 import android.os.Bundle
+import android.util.Log
+import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.example.weather.R
 import com.example.weather.databinding.FragmentViewPagerBinding
+import com.example.weather.utils.Const
+import com.example.weather.utils.PermissionsChecker
 import com.example.weather.views.adapters.ViewPagerAdapter
+import com.google.firebase.auth.FirebaseAuth
 
 class ViewPagerFragment : Fragment() {
 
+    private val TAG = "ViewPagerFragment"
+
     private var _binding: FragmentViewPagerBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +44,26 @@ class ViewPagerFragment : Fragment() {
 
         binding.viewPager.adapter = adapter
 
+        setupToolbar()
+
         return binding.root
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.inflateMenu(R.menu.menu)
+
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_action_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    findNavController().popBackStack(R.id.startFragment, false)
+                    true
+                }
+                else -> {
+                    super.onOptionsItemSelected(item)
+                }
+            }
+        }
     }
 
 }

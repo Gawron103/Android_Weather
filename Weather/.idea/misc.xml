@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/button_login_register.xml" value="0.31666666666666665" />
         <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.5463541666666667" />
         <entry key="app/src/main/res/drawable/ic_logo_splash.xml" value="0.32037037037037036" />
         <entry key="app/src/main/res/drawable/ic_splash_logo.xml" value="0.32256410256410256" />
@@ -11,7 +12,7 @@
         <entry key="app/src/main/res/drawable/splash_image.xml" value="0.5348958333333333" />
         <entry key="app/src/main/res/layout/activity_add_city.xml" value="0.5046875" />
         <entry key="app/src/main/res/layout/activity_detailed_weather.xml" value="0.25227963525835867" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.4115107913669065" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_no_permissions.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/change_location_fragment.xml" value="0.18591691995947315" />
@@ -23,16 +24,18 @@
         <entry key="app/src/main/res/layout/fragment_current_location.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_detailed_weather.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_detailed_weather_for_city.xml" value="0.25227963525835867" />
-        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.51875" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_no_permissions.xml" value="0.2454407294832827" />
         <entry key="app/src/main/res/layout/fragment_permissions.xml" value="0.22282608695652173" />
-        <entry key="app/src/main/res/layout/fragment_register.xml" value="0.5046875" />
+        <entry key="app/src/main/res/layout/fragment_register.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_splash_screen.xml" value="0.24722222222222223" />
-        <entry key="app/src/main/res/layout/fragment_start.xml" value="0.51875" />
+        <entry key="app/src/main/res/layout/fragment_start.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_view_pager.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/item_city_short_weather.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_forecast_current_location.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/item_predicted_weather.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/layout/load_dialog.xml" value="0.25227963525835867" />
+        <entry key="app/src/main/res/menu/menu.xml" value="0.262037037037037" />
         <entry key="app/src/main/res/menu/nav_drawer_menu.xml" value="0.51875" />
       </map>
     </option>

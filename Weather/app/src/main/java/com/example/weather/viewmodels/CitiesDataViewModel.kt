@@ -4,12 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.weather.models.CityModel
 import com.example.weather.repositories.WeatherRepository
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers.io
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CitiesDataViewModel constructor(
     private val repository: WeatherRepository
@@ -31,97 +30,70 @@ class CitiesDataViewModel constructor(
         get() = _citiesLiveData
     private var citiesLists = mutableListOf<CityModel>()
 
-    private val compositeDisposable = CompositeDisposable()
-
     fun refresh() {
-        _weatherLoading.value = true
-        citiesLists.clear()
+        viewModelScope.launch(Dispatchers.IO) {
+            _weatherLoading.postValue(true)
 
-        val disposable = repository.getCities()
-            .flatMap { citiesList ->
-                Observable.fromIterable(citiesList)
-            }
-            .flatMap { city ->
-                repository.getCoordinates(city.name)
-            }
-            .flatMap { location ->
-                repository.getWeather(location[0].lat!!, location[0].lon!!)
-                    .map { location to it }
-            }
-            .flatMap { (location, weather) ->
-                repository.getPlaceId(location[0].cityName!!)
-                    .map { places ->
-                        CityModel(
-                            weather,
-                            location,
-                            places
-                        )
-                    }
-            }
-            .subscribeOn(io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { model ->
-                    citiesLists.add(model)
-                },
-                { error ->
-                    Log.d(TAG, "Error appeared. Error: $error")
-                },
-                {
-                    _citiesLiveData.value = citiesLists
-                    _weatherLoading.value = false
-                }
-            )
+            citiesLists.clear()
 
-        compositeDisposable.add(disposable)
+            val cities = repository.getCitiesFromFirebase()
+
+            Log.d(TAG, "Refresh running on thread: ${Thread.currentThread()}")
+
+            cities.forEach { city ->
+                val location = repository.getCoordinates(city)
+                val weather = repository.getWeather(location[0].lat!!, location[0].lon!!)
+                val places = repository.getPlaceId(location[0].cityName!!)
+
+                citiesLists.add(
+                    CityModel(weather, location, places)
+                )
+            }
+
+            _citiesLiveData.postValue(citiesLists)
+            _weatherLoading.postValue(false)
+        }
     }
 
     fun addCity(name: String) {
-        val disposable = repository.getCoordinates(name)
-            .filter { location ->
-                location.isNotEmpty()
-            }
-            .flatMap { location ->
-                repository.addCity(location[0].cityName!!)
-            }
-            .subscribeOn(io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { isAdded ->
-                    _cityAdded.value = isAdded
-                },
-                { error ->
-                    Log.d(TAG, "Error adding city. Error: $error")
-                },
-                {
+        viewModelScope.launch(Dispatchers.IO) {
+            val location = repository.getCoordinates(name)
+
+            Log.d(TAG, "AddCity running on thread: ${Thread.currentThread()}")
+
+            if (location.isNotEmpty()) {
+                val alreadyExists = repository.isCityInDb(location[0].cityName!!)
+
+                if (!alreadyExists) {
+                    repository.storeCity(location[0].cityName!!)
+                    _cityAdded.postValue(true)
                     refresh()
                 }
-            )
-
-        compositeDisposable.add(disposable)
+                else {
+                    _cityAdded.postValue(false)
+                }
+            }
+            else {
+                _cityAdded.postValue(false)
+            }
+        }
     }
 
     fun removeCity(cityModel: CityModel) {
-        val disposable = repository.deleteCity(cityModel.locationModel?.get(0)?.cityName!!)
-            .subscribeOn(io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { status ->
-                    if (status) {
-                        citiesLists.remove(cityModel)
-                        _citiesLiveData.value = citiesLists
-                        _cityDeleted.value = true
-                    }
-                    else {
-                        _cityDeleted.value = false
-                    }
-                },
-                { error ->
-                    Log.d(TAG, "Error appeared. Error: $error")
-                }
-            )
+        viewModelScope.launch(Dispatchers.IO) {
+            val isInDb = repository.isCityInDb(cityModel.locationModel?.get(0)?.cityName!!)
 
-        compositeDisposable.add(disposable)
+            Log.d(TAG, "RemoveCity running on thread: ${Thread.currentThread()}")
+
+            if (isInDb) {
+                repository.removeCity(cityModel.locationModel[0].cityName!!)
+                _cityDeleted.postValue(true)
+                refresh()
+            }
+            else {
+                _cityDeleted.postValue(false)
+            }
+        }
     }
 
 }

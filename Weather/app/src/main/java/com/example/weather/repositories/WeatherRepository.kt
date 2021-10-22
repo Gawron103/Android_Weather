@@ -1,100 +1,72 @@
 package com.example.weather.repositories
 
-import android.util.Log
 import com.example.weather.BuildConfig
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
-import com.example.weather.db.CityInfo
 import com.example.weather.models.current_weather_model.WeatherModel
 import com.example.weather.models.location_model.LocationModel
 import com.example.weather.models.places_model.PlacesModel
-import io.reactivex.Observable
-import io.realm.Realm
-import io.realm.RealmConfiguration
-import java.util.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import kotlinx.coroutines.tasks.await
 
 class WeatherRepository constructor(
     private val weatherService: WeatherApi,
     private val placesService: PlacesApi,
-    private val realmConfig: RealmConfiguration
 ) {
 
     private val TAG = "WeatherRepository"
 
-    fun getCoordinates(cityName: String): Observable<LocationModel> {
+    private var _databaseInst: FirebaseDatabase
+    private var _databaseRef: DatabaseReference
+
+    init {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        _databaseInst = FirebaseDatabase.getInstance()
+        _databaseRef = _databaseInst.getReference("users").child(currentUser?.uid!!).child("cities")
+    }
+
+    suspend fun getCoordinates(cityName: String): LocationModel {
         return weatherService.getCoordinates(cityName, BuildConfig.WEATHER_API_KEY)
     }
 
-    fun getWeather(lat: Double, lon: Double): Observable<WeatherModel> {
+    suspend fun getWeather(lat: Double, lon: Double): WeatherModel {
         val exclude = "minutely,hourly,alerts"
         val units = "metric"
         return weatherService.getWeather(lat, lon, exclude, units, BuildConfig.WEATHER_API_KEY)
     }
 
-    fun getPlaceId(placeName: String): Observable<PlacesModel> {
+    suspend fun getPlaceId(placeName: String): PlacesModel {
         return placesService.getPlaceId(placeName, "textquery", "photos", BuildConfig.PLACES_API_KEY)
     }
 
-    fun getNameForLocation(lat: Double, lon: Double): Observable<LocationModel> {
+    suspend fun getNameForLocation(lat: Double, lon: Double): LocationModel {
         return weatherService.getNameForLocation(lat, lon, BuildConfig.WEATHER_API_KEY)
     }
 
-    fun addCity(name: String): Observable<Boolean> {
-        return Observable.create { emitter ->
-            Realm.getInstance(realmConfig).use { realm ->
-                realm.executeTransactionAsync { realm ->
-                    var status = false
+    suspend fun storeCity(name: String) {
+        _databaseRef.push().setValue(name).await()
+    }
 
-                    realm.where(CityInfo::class.java).equalTo("name", name).findFirst()?.let {
-                        status = false
-                    } ?: run {
-                        val city = realm.createObject(CityInfo::class.java, UUID.randomUUID().toString())
-                            .apply { this.name = name }
-                        realm.copyToRealm(city)
-                        status = true
-                    }
+    suspend fun removeCity(name: String) {
+        val cities = getCitiesFromFirebase() as MutableList
+        cities.remove(name)
+        _databaseRef.setValue(cities as List<String>)
+    }
 
-                    Log.d(TAG, "Repository ADD worked on thread: ${Thread.currentThread()}")
-
-                    emitter.onNext(status)
-                    emitter.onComplete()
-                }
-            }
+    suspend fun isCityInDb(name: String): Boolean {
+        return _databaseRef.get().await().children.any { snapshot ->
+            snapshot.getValue(String::class.java)!! == name
         }
     }
 
-    fun deleteCity(name: String): Observable<Boolean> {
-        return Observable.create { emitter ->
-            Realm.getInstance(realmConfig).use { realm ->
-                realm.executeTransactionAsync { realm ->
-                    realm
-                        .where(CityInfo::class.java)
-                        .equalTo("name", name)
-                        .findFirst()?.let {
-                            it.deleteFromRealm()
-                            emitter.onNext(true)
-                        } ?: emitter.onNext(false)
-
-                    Log.d(TAG, "Repository DELETE worked on thread: ${Thread.currentThread()}")
-
-                    emitter.onComplete()
-                }
-            }
+    suspend fun getCitiesFromFirebase(): List<String> {
+        val citiesList = _databaseRef.get().await().children.map { snapshot ->
+            snapshot.getValue(String::class.java)!!
         }
+
+        return citiesList
     }
 
-    fun getCities(): Observable<List<CityInfo>> {
-        return Observable.create { emitter ->
-            Realm.getInstance(realmConfig).use { realm ->
-                realm.executeTransactionAsync { realm ->
-                    val data = realm.copyFromRealm(realm.where(CityInfo::class.java).findAll())
-                    Log.d(TAG, "Repository GET CITIES worked on thread: ${Thread.currentThread()}")
-                    emitter.onNext(data)
-                    emitter.onComplete()
-                }
-            }
-
-        }
-    }
 
 }
