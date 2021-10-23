@@ -40,13 +40,14 @@ class RegisterFragment : Fragment() {
     ): View? {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
+        binding.pbRegistering.visibility = View.GONE
+
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
         binding.btnRegister.setOnClickListener {
             registerUser(
-                binding.etName.text.toString(),
                 binding.etEmail.text.toString().trim(),
                 binding.etPw.text.toString()
             )
@@ -62,8 +63,11 @@ class RegisterFragment : Fragment() {
         _binding = null
     }
 
-    private fun registerUser(name: String, email: String, password: String) {
-        if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+    private fun registerUser(email: String, password: String) {
+        binding.pbRegistering.visibility = View.VISIBLE
+        binding.cvRegisterFields.visibility = View.GONE
+
+        if (email.isNotEmpty() && password.isNotEmpty()) {
             _auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -74,16 +78,24 @@ class RegisterFragment : Fragment() {
                         ).show()
 
                         saveUserInDb()
+
+                        binding.pbRegistering.visibility = View.GONE
+                        binding.cvRegisterFields.visibility = View.VISIBLE
+
                         findNavController().popBackStack()
                     } else {
                         Toast.makeText(requireContext(), "User creation failed", Toast.LENGTH_LONG)
                             .show()
                         Log.d(TAG, "Exception: ${task.exception}")
+                        binding.pbRegistering.visibility = View.GONE
+                        binding.cvRegisterFields.visibility = View.VISIBLE
                     }
                 }
         }
         else {
             Toast.makeText(requireContext(), "Wrong input", Toast.LENGTH_LONG).show()
+            binding.pbRegistering.visibility = View.GONE
+            binding.cvRegisterFields.visibility = View.VISIBLE
         }
     }
 

@@ -68,10 +68,6 @@ class StartFragment : Fragment() {
             findNavController().navigate(R.id.action_startFragment_to_loginFragment)
         }
 
-        binding.btnRegister.setOnClickListener {
-            findNavController().navigate(R.id.action_startFragment_to_registerFragment)
-        }
-
         binding.googleSignInButton.setSize(SIZE_WIDE)
         binding.googleSignInButton.setOnClickListener {
             googleLogin()

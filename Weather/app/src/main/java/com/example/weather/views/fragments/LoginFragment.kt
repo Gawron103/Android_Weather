@@ -44,8 +44,11 @@ class LoginFragment : Fragment() {
         }
 
         binding.btnBack.setOnClickListener {
-            val res = findNavController().popBackStack()
-            Log.d(TAG, "back clicked. Result: $res")
+            findNavController().popBackStack()
+        }
+
+        binding.tvNoAccount.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
         Log.d(TAG, "NavStack: ${findNavController().backStack}")

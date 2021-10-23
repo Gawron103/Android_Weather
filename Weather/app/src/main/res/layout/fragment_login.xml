@@ -7,6 +7,17 @@
     tools:context=".views.fragments.LoginFragment">
 
 
+    <Button
+        android:id="@+id/btn_Back"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/back_icon"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_LoginInput"
         android:layout_width="match_parent"
@@ -37,14 +48,16 @@
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
                     android:text="Email"
-                    android:textAlignment="viewStart" />
+                    android:textAlignment="viewStart"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/et_Email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
+                    android:layout_margin="8dp"
                     android:ems="10"
                     android:inputType="textEmailAddress" />
 
@@ -52,13 +65,15 @@
                     android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Password" />
+                    android:layout_margin="8dp"
+                    android:text="Password"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/et_Pw"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
                     android:ems="10"
                     android:inputType="textPassword" />
             </LinearLayout>
@@ -73,13 +88,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
-            <Button
-                android:id="@+id/btn_Back"
+            <TextView
+                android:id="@+id/tv_NoAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="Back"
+                android:clickable="true"
+                android:text="Don't have an account? Click here to register"
+                android:textColor="#2196F3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -107,9 +126,11 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
         android:src="@drawable/ic_logo"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/cv_LoginInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
