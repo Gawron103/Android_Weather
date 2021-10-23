@@ -29,24 +29,24 @@
         android:label="fragment_start"
         tools:layout="@layout/fragment_start" >
         <action
-            android:id="@+id/action_startFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/startFragment"
-            app:popUpToInclusive="false" />
-        <action
-            android:id="@+id/action_startFragment_to_registerFragment"
-            app:destination="@id/registerFragment"
-            app:popUpTo="@id/startFragment"
-            app:popUpToInclusive="false" />
-        <action
             android:id="@+id/action_startFragment_to_viewPagerFragment"
             app:destination="@id/viewPagerFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.weather.views.fragments.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" />
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_viewPagerFragment"
+            app:destination="@id/viewPagerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/noPermissionsFragment"
         android:name="com.example.weather.views.fragments.NoPermissionsFragment"

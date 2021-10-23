@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "282172306417",
+    "firebase_url": "https://weatherapp-e9944-default-rtdb.firebaseio.com",
     "project_id": "weatherapp-e9944",
     "storage_bucket": "weatherapp-e9944.appspot.com"
   },

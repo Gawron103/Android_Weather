@@ -11,7 +11,11 @@ import com.example.weather.databinding.FragmentViewPagerBinding
 import com.example.weather.utils.Const
 import com.example.weather.utils.PermissionsChecker
 import com.example.weather.views.adapters.ViewPagerAdapter
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 
 class ViewPagerFragment : Fragment() {
 
@@ -55,9 +59,22 @@ class ViewPagerFragment : Fragment() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_action_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    findNavController().popBackStack(R.id.startFragment, false)
-                    true
+                    val user = FirebaseAuth.getInstance().currentUser!!
+                    Log.d(TAG, "Provider id: ${user.providerData[user.providerData.size - 1].providerId}")
+                    when (user.providerData[user.providerData.size - 1].providerId) {
+                        "password" -> {
+                            signOutEmail()
+                            true
+                        }
+                        "google.com" -> {
+                            signOutGoogle()
+                            true
+                        }
+                        else -> {
+                            signOutEmail()
+                            true
+                        }
+                    }
                 }
                 else -> {
                     super.onOptionsItemSelected(item)
@@ -65,5 +82,24 @@ class ViewPagerFragment : Fragment() {
             }
         }
     }
+
+    private fun signOutEmail() {
+        FirebaseAuth.getInstance().signOut()
+        findNavController().popBackStack(R.id.startFragment, false)
+    }
+
+    private fun signOutGoogle() {
+        FirebaseAuth.getInstance().signOut()
+        val googleClient = GoogleSignIn.getClient(requireContext(), getGoogleSignOptions())
+        googleClient.signOut().addOnCompleteListener {
+            findNavController().popBackStack(R.id.startFragment, false)
+        }
+    }
+
+    private fun getGoogleSignOptions() = GoogleSignInOptions
+        .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(R.string.google_default_web_client_id.toString())
+        .requestEmail()
+        .build()
 
 }
