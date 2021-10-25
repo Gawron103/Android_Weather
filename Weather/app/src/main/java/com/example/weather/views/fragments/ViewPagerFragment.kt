@@ -87,7 +87,9 @@ class ViewPagerFragment : Fragment() {
         FirebaseAuth.getInstance().signOut()
         val googleClient = GoogleSignIn.getClient(requireContext(), getGoogleSignOptions())
         googleClient.signOut().addOnCompleteListener {
-            findNavController().popBackStack(R.id.startFragment, false)
+            googleClient.revokeAccess().addOnCompleteListener {
+                findNavController().popBackStack(R.id.startFragment, false)
+            }
         }
     }
 

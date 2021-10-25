@@ -51,7 +51,7 @@ class StartFragment : Fragment() {
                 }
                 catch (exception: ApiException) {
                     Toast.makeText(requireContext(), "Google authentication failed", Toast.LENGTH_LONG).show()
-                    Log.d(TAG, "Google auth exception: $exception")
+                    Log.d(TAG, "Google auth exception: ${exception.message}")
                 }
             }
         }
@@ -132,6 +132,7 @@ class StartFragment : Fragment() {
                     }
                     else {
                         Log.d(TAG, "Google authorization failed")
+                        Log.d(TAG, "Error: ${task.exception?.message}")
                     }
                 }
         }
