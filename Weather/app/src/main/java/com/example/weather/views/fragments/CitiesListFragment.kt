@@ -55,7 +55,7 @@ class CitiesListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCitiesListBinding.inflate(inflater, container, false)
 
         binding.rvCitiesList.apply {

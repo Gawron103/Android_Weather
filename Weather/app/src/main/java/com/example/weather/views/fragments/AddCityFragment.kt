@@ -21,7 +21,7 @@ class AddCityFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAddCityBinding.inflate(inflater, container, false)
 
         binding.btnAddCity.setOnClickListener {

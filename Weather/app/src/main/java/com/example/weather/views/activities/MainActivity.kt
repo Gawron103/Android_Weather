@@ -7,7 +7,7 @@ import com.example.weather.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var _binding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {

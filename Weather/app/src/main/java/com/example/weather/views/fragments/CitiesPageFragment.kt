@@ -13,7 +13,7 @@ class CitiesPageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCitiesPageBinding.inflate(inflater, container, false)
         return binding.root
     }

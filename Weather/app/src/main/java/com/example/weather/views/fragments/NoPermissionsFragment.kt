@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.weather.R
 import com.example.weather.databinding.FragmentNoPermissionsBinding
 
 class NoPermissionsFragment : Fragment() {
@@ -17,7 +16,7 @@ class NoPermissionsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentNoPermissionsBinding.inflate(inflater, container, false)
 
         return binding.root

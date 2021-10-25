@@ -51,7 +51,7 @@ class StartFragment : Fragment() {
                 }
                 catch (exception: ApiException) {
                     Toast.makeText(requireContext(), "Google authentication failed", Toast.LENGTH_LONG).show()
-                    Log.d(TAG, "Google auth exception: ${exception}")
+                    Log.d(TAG, "Google auth exception: $exception")
                 }
             }
         }
@@ -61,7 +61,7 @@ class StartFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentStartBinding.inflate(inflater, container, false)
 
         binding.btnLogin.setOnClickListener {

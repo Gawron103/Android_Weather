@@ -3,19 +3,14 @@ package com.example.weather.views.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.weather.R
 import com.example.weather.databinding.FragmentViewPagerBinding
-import com.example.weather.utils.Const
-import com.example.weather.utils.PermissionsChecker
 import com.example.weather.views.adapters.ViewPagerAdapter
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 
 class ViewPagerFragment : Fragment() {
 
@@ -32,7 +27,7 @@ class ViewPagerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentViewPagerBinding.inflate(inflater, container, false)
 
         val fragments = arrayListOf(

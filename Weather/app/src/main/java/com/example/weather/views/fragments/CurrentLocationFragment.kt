@@ -1,10 +1,8 @@
 package com.example.weather.views.fragments
 
 import android.annotation.SuppressLint
-import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +34,6 @@ class CurrentLocationFragment : Fragment() {
 
     private lateinit var _fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var _locationRequest: LocationRequest
-    private lateinit var _lastLocation: Location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +65,7 @@ class CurrentLocationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCurrentLocationBinding.inflate(inflater, container, false)
 
         binding.rvForecast.apply {
@@ -147,17 +144,11 @@ class CurrentLocationFragment : Fragment() {
         client.checkLocationSettings(request).addOnSuccessListener {
             startLocationUpdates()
         }
-
-        _fusedLocationProviderClient.requestLocationUpdates(
-            _locationRequest,
-            locationCallback,
-            Looper.myLooper()
-        )
     }
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        _fusedLocationProviderClient.requestLocationUpdates(_locationRequest, locationCallback, Looper.myLooper())
+        _fusedLocationProviderClient.requestLocationUpdates(_locationRequest, locationCallback, Looper.myLooper()!!)
     }
 
     private fun stopLocationUpdates() {

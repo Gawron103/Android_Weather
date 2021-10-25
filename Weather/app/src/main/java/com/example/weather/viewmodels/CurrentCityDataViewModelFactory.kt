@@ -8,6 +8,7 @@ class CurrentCityDataViewModelFactory constructor(
     private val repository: WeatherRepository
 ): ViewModelProvider.Factory {
 
+    @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(CurrentCityDataViewModel::class.java) -> {

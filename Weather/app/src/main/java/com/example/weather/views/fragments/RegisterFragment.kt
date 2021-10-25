@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import com.example.weather.R
 import com.example.weather.databinding.FragmentRegisterBinding
 import com.example.weather.db.User
 import com.google.firebase.auth.FirebaseAuth
@@ -37,7 +36,7 @@ class RegisterFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
         binding.pbRegistering.visibility = View.GONE
