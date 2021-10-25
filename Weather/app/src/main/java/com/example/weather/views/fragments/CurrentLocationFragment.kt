@@ -1,6 +1,7 @@
 package com.example.weather.views.fragments
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -34,6 +35,8 @@ class CurrentLocationFragment : Fragment() {
     private lateinit var _forecastAdapter: CurrentLocationForecastAdapter
 
     private lateinit var _fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var _locationRequest: LocationRequest
+    private lateinit var _lastLocation: Location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +53,15 @@ class CurrentLocationFragment : Fragment() {
         ).get(CurrentCityDataViewModel::class.java)
 
         _fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        _locationRequest = LocationRequest.create()
+            .apply {
+                interval = 4000
+                fastestInterval = 2000
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                smallestDisplacement = 100000F
+            }
+
         getLocation()
     }
 
@@ -82,6 +94,16 @@ class CurrentLocationFragment : Fragment() {
         _binding = null
     }
 
+    override fun onStart() {
+        super.onStart()
+        requestNewLocationData()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopLocationUpdates()
+    }
+
     private fun observeViewModel() {
         _viewModel.isLoadingWeather.observe(requireActivity(), { isLoading ->
             binding.pbLoadingWeatherForLocation.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -110,6 +132,7 @@ class CurrentLocationFragment : Fragment() {
     private fun getLocation() {
         _fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
+
                 _viewModel.refresh(location.latitude, location.longitude)
             } ?: requestNewLocationData()
         }
@@ -117,24 +140,34 @@ class CurrentLocationFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
-        val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 0
-            fastestInterval = 0
-            numUpdates = 1
+        val request = LocationSettingsRequest.Builder()
+            .addLocationRequest(_locationRequest).build()
+
+        val client = LocationServices.getSettingsClient(requireContext())
+        client.checkLocationSettings(request).addOnSuccessListener {
+            startLocationUpdates()
         }
 
         _fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
+            _locationRequest,
             locationCallback,
             Looper.myLooper()
         )
     }
 
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates() {
+        _fusedLocationProviderClient.requestLocationUpdates(_locationRequest, locationCallback, Looper.myLooper())
+    }
+
+    private fun stopLocationUpdates() {
+        _fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
+
     private val locationCallback = object: LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            val lastLocation = locationResult.lastLocation
-            _viewModel.refresh(lastLocation.latitude, lastLocation.longitude)
+            val location = locationResult.lastLocation
+            _viewModel.refresh(location.latitude, location.longitude)
         }
     }
 
