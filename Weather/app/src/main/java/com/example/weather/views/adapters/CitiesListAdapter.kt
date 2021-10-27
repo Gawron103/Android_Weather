@@ -15,7 +15,6 @@ import kotlin.math.round
 
 class CitiesListAdapter(
     private var citiesList: ArrayList<CityModel>,
-    private val onDeleteCallback: (CityModel) -> Unit,
     private val context: Context
 ):
     RecyclerView.Adapter<CitiesListAdapter.CitiesListViewHolder>()
@@ -37,6 +36,12 @@ class CitiesListAdapter(
 
     override fun getItemCount(): Int = citiesList.size
 
+    fun getItemAt(position: Int): CityModel = citiesList[position]
+
+    fun removeItemAt(position: Int) {
+        citiesList.removeAt(position)
+    }
+
     inner class CitiesListViewHolder(private val binding: ItemCityShortWeatherBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(cityModel: CityModel, context: Context) {
@@ -50,10 +55,6 @@ class CitiesListAdapter(
             Glide.with(context).load(
                 "https://maps.googleapis.com/maps/api/place/photo?photoreference=${cityModel.placesModel?.candidates?.get(0)?.photos?.get(0)?.photo_reference}&key=${BuildConfig.PLACES_API_KEY}&maxwidth=1980&maxheight=1200"
             ).error(R.drawable.error_icon).into(binding.ivCity)
-
-            binding.btnDeleteCity.setOnClickListener {
-                onDeleteCallback(cityModel)
-            }
 
             itemView.setOnClickListener {
                 val action = CitiesListFragmentDirections.actionCitiesListFragmentToDetailedWeatherForCityFragment(

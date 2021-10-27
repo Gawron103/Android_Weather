@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
 import com.example.weather.databinding.FragmentCitiesListBinding
 import com.example.weather.models.CityModel
@@ -31,7 +33,7 @@ class CitiesListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var _viewModel: CitiesDataViewModel
-    private lateinit var citiesWeatherListAdapter: CitiesListAdapter
+    private lateinit var _citiesWeatherListAdapter: CitiesListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,7 @@ class CitiesListFragment : Fragment() {
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService)
 
-        citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), ::deleteCity, requireContext())
+        _citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), requireContext())
 
         _viewModel = ViewModelProvider(
             this,
@@ -60,8 +62,14 @@ class CitiesListFragment : Fragment() {
 
         binding.rvCitiesList.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = citiesWeatherListAdapter
+            adapter = _citiesWeatherListAdapter
         }
+
+        getItemTouchHelper().also { helper ->
+            helper.attachToRecyclerView(binding.rvCitiesList)
+            Log.d(TAG, "helper attached to the recycler view")
+        }
+
 
         binding.btnAdd.setOnClickListener {
             findNavController().navigate(R.id.action_citiesListFragment_to_addCityFragment)
@@ -79,9 +87,32 @@ class CitiesListFragment : Fragment() {
         _binding = null
     }
 
+    private fun getItemTouchHelper(): ItemTouchHelper {
+        return ItemTouchHelper(
+            object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val item = _citiesWeatherListAdapter.getItemAt(position)
+
+                    deleteCity(item)
+                    _citiesWeatherListAdapter.removeItemAt(position)
+                    _citiesWeatherListAdapter.notifyItemRemoved(position)
+                }
+            }
+        )
+    }
+
     private fun observeWeatherViewModel() {
         _viewModel.citiesLiveData.observe(requireActivity(), { cities ->
-            citiesWeatherListAdapter.updateCities(cities)
+            _citiesWeatherListAdapter.updateCities(cities)
         })
 
         _viewModel.weatherLoading.observe(requireActivity(), { isLoading ->

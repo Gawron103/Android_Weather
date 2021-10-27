@@ -88,7 +88,6 @@ class CitiesDataViewModel constructor(
             if (isInDb) {
                 repository.removeCity(cityModel.locationModel[0].cityName!!)
                 _cityDeleted.postValue(true)
-                refresh()
             }
             else {
                 _cityDeleted.postValue(false)
