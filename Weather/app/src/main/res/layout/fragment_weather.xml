@@ -47,10 +47,11 @@
         android:id="@+id/bn_Navigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/logo_color"
-        app:menu="@menu/bottom_menu"
+        android:background="@color/white"
+        app:itemTextColor="@color/logo_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

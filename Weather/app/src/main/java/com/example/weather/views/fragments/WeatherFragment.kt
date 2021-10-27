@@ -6,14 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.weather.R
-import com.example.weather.databinding.FragmentCurrentLocationBinding
 import com.example.weather.databinding.FragmentWeatherBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -49,7 +45,7 @@ class WeatherFragment : Fragment() {
     }
 
         private fun setupToolbar() {
-        binding.toolbar.inflateMenu(R.menu.menu)
+        binding.toolbar.inflateMenu(R.menu.toolbar_menu)
 
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {

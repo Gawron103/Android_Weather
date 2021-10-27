@@ -18,6 +18,18 @@ data class Daily(
     @SerializedName("temp")
     val tempInDay: Temp?,
 
+    @SerializedName("pressure")
+    val pressure: Int?,
+
+    @SerializedName("clouds")
+    val clouds: Int?,
+
+    @SerializedName("humidity")
+    val humidity: Int?,
+
+    @SerializedName("wind_speed")
+    val windSpeed: Double?,
+
     val weather: List<Weather>?
 
 ): Parcelable

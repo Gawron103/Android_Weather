@@ -42,8 +42,6 @@ class CurrentLocationFragment : Fragment() {
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService)
 
-        _forecastAdapter = CurrentLocationForecastAdapter(arrayListOf(), requireContext())
-
         _viewModel = ViewModelProvider(
             this,
             CurrentCityDataViewModelFactory(weatherRepository)
@@ -70,7 +68,9 @@ class CurrentLocationFragment : Fragment() {
 
         binding.rvForecast.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = _forecastAdapter
+            adapter = CurrentLocationForecastAdapter(arrayListOf(), requireContext(), this)
+        }.also {
+            _forecastAdapter = it.adapter as CurrentLocationForecastAdapter
         }
 
         binding.slCurrentLocation.setOnRefreshListener {
