@@ -2,53 +2,53 @@ package com.example.weather.views.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
 import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.example.weather.R
-import com.example.weather.databinding.FragmentViewPagerBinding
-import com.example.weather.views.adapters.ViewPagerAdapter
+import com.example.weather.databinding.FragmentCurrentLocationBinding
+import com.example.weather.databinding.FragmentWeatherBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
-class ViewPagerFragment : Fragment() {
+class WeatherFragment : Fragment() {
 
-    private val TAG = "ViewPagerFragment"
+    private val TAG = "WeatherFragment"
 
-    private var _binding: FragmentViewPagerBinding? = null
+    private var _binding: FragmentWeatherBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentViewPagerBinding.inflate(inflater, container, false)
-
-        val fragments = arrayListOf(
-            CurrentLocationFragment(),
-            CitiesPageFragment()
-        )
-
-        val adapter = ViewPagerAdapter(
-            fragments,
-            requireActivity().supportFragmentManager,
-            lifecycle
-        )
-
-        binding.viewPager.adapter = adapter
+        _binding = FragmentWeatherBinding.inflate(inflater, container, false)
 
         setupToolbar()
+        setupBottomNav()
 
         return binding.root
     }
 
-    private fun setupToolbar() {
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+        private fun setupToolbar() {
         binding.toolbar.inflateMenu(R.menu.menu)
 
         binding.toolbar.setOnMenuItemClickListener { item ->
@@ -76,6 +76,12 @@ class ViewPagerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupBottomNav() {
+        val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.weatherNavHost) as NavHostFragment
+        val navController = nestedNavHostFragment.navController
+        binding.bnNavigation.setupWithNavController(navController)
     }
 
     private fun signOutEmail() {

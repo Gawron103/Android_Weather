@@ -2,10 +2,13 @@ package com.example.weather.views.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.navigation.NavController
 import com.example.weather.R
 import com.example.weather.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = "MainActivity"
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!

@@ -72,7 +72,7 @@ class LoginFragment : Fragment() {
                         if (task.isSuccessful) {
                             Toast.makeText(requireContext(), "User logged in successfully", Toast.LENGTH_LONG).show()
                             binding.pbLogging.visibility = View.GONE
-                            findNavController().navigate(R.id.action_loginFragment_to_viewPagerFragment)
+                            findNavController().navigate(R.id.action_loginFragment_to_weatherFragment)
                         }
                         else {
                             Toast.makeText(requireContext(), "Wrong email or password", Toast.LENGTH_LONG).show()

@@ -99,7 +99,7 @@ class StartFragment : Fragment() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         if (result.any { it.value != true }) {
-            findNavController().navigate(R.id.action_viewPagerFragment_to_noPermissionsFragment)
+            findNavController().navigate(R.id.action_startFragment_to_noPermissionsFragment)
         }
         else {
             isUserAlreadySigned()
@@ -111,7 +111,7 @@ class StartFragment : Fragment() {
             auth.currentUser?.let {
                 // user already logged in. go to the current location view
                 Log.d(TAG, "User already logged in, redirecting")
-                findNavController().navigate(R.id.action_startFragment_to_viewPagerFragment)
+                findNavController().navigate(R.id.action_startFragment_to_weatherFragment)
             }
         }
     }
@@ -128,7 +128,7 @@ class StartFragment : Fragment() {
             auth.signInWithCredential(credentials)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        findNavController().navigate(R.id.action_startFragment_to_viewPagerFragment)
+                        findNavController().navigate(R.id.action_startFragment_to_weatherFragment)
                     }
                     else {
                         Log.d(TAG, "Google authorization failed")

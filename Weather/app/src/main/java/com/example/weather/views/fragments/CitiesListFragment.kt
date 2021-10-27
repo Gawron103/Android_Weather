@@ -63,11 +63,6 @@ class CitiesListFragment : Fragment() {
             adapter = citiesWeatherListAdapter
         }
 
-        binding.srCitiesList.setOnRefreshListener {
-            _viewModel.refresh()
-            binding.srCitiesList.isRefreshing = false
-        }
-
         binding.btnAdd.setOnClickListener {
             findNavController().navigate(R.id.action_citiesListFragment_to_addCityFragment)
         }

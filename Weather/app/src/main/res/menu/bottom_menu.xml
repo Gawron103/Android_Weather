@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/currentLocationFragment"
+        android:icon="@drawable/location_icon"
+        android:title="Current location" />
+
+    <item
+        android:id="@+id/citiesListFragment"
+        android:icon="@drawable/city_add_icon"
+        android:title="Other cities" />
+
+</menu>

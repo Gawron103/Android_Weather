@@ -28,13 +28,13 @@ class CitiesDataViewModel constructor(
     private var _citiesLiveData = MutableLiveData<MutableList<CityModel>>()
     val citiesLiveData: LiveData<MutableList<CityModel>>
         get() = _citiesLiveData
-    private var citiesLists = mutableListOf<CityModel>()
+    private var _citiesLists = mutableListOf<CityModel>()
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
             _weatherLoading.postValue(true)
 
-            citiesLists.clear()
+            _citiesLists.clear()
 
             val cities = repository.getCitiesFromFirebase()
 
@@ -45,12 +45,12 @@ class CitiesDataViewModel constructor(
                 val weather = repository.getWeather(location[0].lat!!, location[0].lon!!)
                 val places = repository.getPlaceId(location[0].cityName!!)
 
-                citiesLists.add(
+                _citiesLists.add(
                     CityModel(weather, location, places)
                 )
             }
 
-            _citiesLiveData.postValue(citiesLists)
+            _citiesLiveData.postValue(_citiesLists)
             _weatherLoading.postValue(false)
         }
     }

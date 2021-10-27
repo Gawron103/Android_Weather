@@ -6,24 +6,10 @@
     app:startDestination="@id/startFragment">
 
     <fragment
-        android:id="@+id/viewPagerFragment"
-        android:name="com.example.weather.views.fragments.ViewPagerFragment"
-        android:label="fragment_view_pager"
-        tools:layout="@layout/fragment_view_pager" >
-        <action
-            android:id="@+id/action_viewPagerFragment_to_noPermissionsFragment"
-            app:destination="@id/noPermissionsFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-    </fragment>
-    <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.weather.views.fragments.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_loginFragment_to_viewPagerFragment"
-            app:destination="@id/viewPagerFragment" />
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment"
@@ -32,6 +18,12 @@
             app:popEnterAnim="@android:anim/fade_in"
             app:popExitAnim="@android:anim/fade_out"
             app:popUpTo="@id/loginFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_noPermissionsFragment"
+            app:destination="@id/noPermissionsFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_weatherFragment"
+            app:destination="@id/weatherFragment" />
     </fragment>
     <fragment
         android:id="@+id/startFragment"
@@ -39,17 +31,23 @@
         android:label="fragment_start"
         tools:layout="@layout/fragment_start" >
         <action
-            android:id="@+id/action_startFragment_to_viewPagerFragment"
-            app:destination="@id/viewPagerFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-        <action
             android:id="@+id/action_startFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@android:anim/fade_in"
             app:popExitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/startFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_noPermissionsFragment"
+            app:destination="@id/noPermissionsFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_weatherFragment"
+            app:destination="@id/weatherFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"
             app:popUpTo="@id/startFragment" />
     </fragment>
     <fragment
@@ -62,4 +60,9 @@
         android:name="com.example.weather.views.fragments.NoPermissionsFragment"
         android:label="fragment_no_permissions"
         tools:layout="@layout/fragment_no_permissions" />
+    <fragment
+        android:id="@+id/weatherFragment"
+        android:name="com.example.weather.views.fragments.WeatherFragment"
+        android:label="fragment_weather"
+        tools:layout="@layout/fragment_weather" />
 </navigation>
