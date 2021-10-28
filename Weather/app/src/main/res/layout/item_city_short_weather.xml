@@ -214,19 +214,6 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.7" />
 
-        <Button
-            android:id="@+id/btn_deleteCity"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/delete_icon"
-            android:shadowColor="#000000"
-            android:shadowRadius="10"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -266,6 +253,18 @@
                 android:textSize="48sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_CheckdIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:translationZ="2dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_check" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

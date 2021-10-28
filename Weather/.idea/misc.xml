@@ -18,7 +18,7 @@
         <entry key="app/src/main/res/layout/change_location_fragment.xml" value="0.18591691995947315" />
         <entry key="app/src/main/res/layout/cities_list_fragment.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_add_city.xml" value="0.25227963525835867" />
-        <entry key="app/src/main/res/layout/fragment_cities_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_cities_list.xml" value="0.46474820143884893" />
         <entry key="app/src/main/res/layout/fragment_cities_main_weather.xml" value="0.18591691995947315" />
         <entry key="app/src/main/res/layout/fragment_cities_page.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/layout/fragment_current_location.xml" value="0.25227963525835867" />
@@ -38,7 +38,9 @@
         <entry key="app/src/main/res/layout/load_dialog.xml" value="0.25227963525835867" />
         <entry key="app/src/main/res/menu/bottom_menu.xml" value="0.30185185185185187" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.262037037037037" />
+        <entry key="app/src/main/res/menu/menu_delete_selected.xml" value="0.29907407407407405" />
         <entry key="app/src/main/res/menu/nav_drawer_menu.xml" value="0.51875" />
+        <entry key="app/src/main/res/menu/toolbar_menu.xml" value="0.34427083333333336" />
       </map>
     </option>
   </component>

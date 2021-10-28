@@ -2,10 +2,8 @@ package com.example.weather.views.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -44,9 +42,8 @@ class WeatherFragment : Fragment() {
         _binding = null
     }
 
-        private fun setupToolbar() {
+    private fun setupToolbar() {
         binding.toolbar.inflateMenu(R.menu.toolbar_menu)
-
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_action_logout -> {

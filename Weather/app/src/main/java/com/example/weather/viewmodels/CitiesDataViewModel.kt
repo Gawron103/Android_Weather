@@ -79,19 +79,33 @@ class CitiesDataViewModel constructor(
         }
     }
 
-    fun removeCity(cityModel: CityModel) {
+    fun removeCity(cityName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val isInDb = repository.isCityInDb(cityModel.locationModel?.get(0)?.cityName!!)
+            val isInDb = repository.isCityInDb(cityName)
 
             Log.d(TAG, "RemoveCity running on thread: ${Thread.currentThread()}")
 
             if (isInDb) {
-                repository.removeCity(cityModel.locationModel[0].cityName!!)
+                repository.removeCity(cityName)
                 _cityDeleted.postValue(true)
             }
             else {
                 _cityDeleted.postValue(false)
             }
+        }
+    }
+
+    fun removeSelectedCities(cities: Set<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (city in cities) {
+                val isInDb = repository.isCityInDb(city)
+
+                if (isInDb) {
+                    repository.removeCity(city)
+                }
+            }
+
+            _cityDeleted.postValue(true)
         }
     }
 

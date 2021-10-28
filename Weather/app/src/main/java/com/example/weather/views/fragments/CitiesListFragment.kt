@@ -3,10 +3,8 @@ package com.example.weather.views.fragments
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -15,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
 import com.example.weather.databinding.FragmentCitiesListBinding
-import com.example.weather.models.CityModel
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
 import com.example.weather.repositories.WeatherRepository
@@ -42,7 +39,9 @@ class CitiesListFragment : Fragment() {
         val weatherService = WeatherApi.getInstance()
         val weatherRepository = WeatherRepository(weatherService, placesService)
 
-        _citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(), requireContext())
+        _citiesWeatherListAdapter = CitiesListAdapter(arrayListOf(),
+            requireContext(),
+            ::deleteBtnVisibilityCallback)
 
         _viewModel = ViewModelProvider(
             this,
@@ -70,6 +69,11 @@ class CitiesListFragment : Fragment() {
             Log.d(TAG, "helper attached to the recycler view")
         }
 
+        binding.btnRemoveSelected.setOnClickListener {
+            val cities = _citiesWeatherListAdapter.removeSelectedItems()
+            _citiesWeatherListAdapter.resetSelectedItems()
+            _viewModel.removeSelectedCities(cities)
+        }
 
         binding.btnAdd.setOnClickListener {
             findNavController().navigate(R.id.action_citiesListFragment_to_addCityFragment)
@@ -102,7 +106,7 @@ class CitiesListFragment : Fragment() {
                     val position = viewHolder.adapterPosition
                     val item = _citiesWeatherListAdapter.getItemAt(position)
 
-                    deleteCity(item)
+                    deleteCity(item.locationModel?.get(0)?.cityName!!)
                     _citiesWeatherListAdapter.removeItemAt(position)
                     _citiesWeatherListAdapter.notifyItemRemoved(position)
                 }
@@ -136,8 +140,15 @@ class CitiesListFragment : Fragment() {
         _viewModel.addCity(name)
     }
 
-    private fun deleteCity(cityModel: CityModel) {
-        _viewModel.removeCity(cityModel)
+    private fun deleteCity(cityName: String) {
+        _viewModel.removeCity(cityName)
+    }
+
+    private fun deleteBtnVisibilityCallback(isVisible: Boolean) {
+        binding.btnRemoveSelected.visibility = when (isVisible) {
+            true -> { View.VISIBLE }
+            else -> { View.GONE }
+        }
     }
 
 }
