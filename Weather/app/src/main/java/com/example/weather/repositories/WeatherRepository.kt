@@ -1,5 +1,6 @@
 package com.example.weather.repositories
 
+import android.util.Log
 import com.example.weather.BuildConfig
 import com.example.weather.networking.PlacesApi
 import com.example.weather.networking.WeatherApi
@@ -45,28 +46,15 @@ class WeatherRepository constructor(
     }
 
     suspend fun storeCity(name: String) {
-        _databaseRef.push().setValue(name).await()
+        _databaseRef.push().setValue(name)
     }
 
-    suspend fun removeCity(name: String) {
-        val cities = getCitiesFromFirebase() as MutableList
-        cities.remove(name)
-        _databaseRef.setValue(cities as List<String>)
+    suspend fun removeCity(cityKey: String) {
+        _databaseRef.child(cityKey).removeValue().await()
     }
 
-    suspend fun isCityInDb(name: String): Boolean {
-        return _databaseRef.get().await().children.any { snapshot ->
-            snapshot.getValue(String::class.java)!! == name
-        }
+    fun getRefToCity(): DatabaseReference {
+        return _databaseRef
     }
-
-    suspend fun getCitiesFromFirebase(): List<String> {
-        val citiesList = _databaseRef.get().await().children.map { snapshot ->
-            snapshot.getValue(String::class.java)!!
-        }
-
-        return citiesList
-    }
-
 
 }

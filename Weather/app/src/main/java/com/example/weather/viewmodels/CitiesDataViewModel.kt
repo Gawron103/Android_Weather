@@ -7,6 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather.models.CityModel
 import com.example.weather.repositories.WeatherRepository
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -28,29 +32,52 @@ class CitiesDataViewModel constructor(
     private var _citiesLiveData = MutableLiveData<MutableList<CityModel>>()
     val citiesLiveData: LiveData<MutableList<CityModel>>
         get() = _citiesLiveData
-    private var _citiesLists = mutableListOf<CityModel>()
 
-    fun refresh() {
+    private val _userCitiesRef: DatabaseReference = repository.getRefToCity()
+    private val _citiesListener: ValueEventListener
+    private var _cities = mutableMapOf<String, String>()
+
+    init {
+        _citiesListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                _cities.clear()
+
+                Log.d(TAG, "Values: ${snapshot.value}")
+                _cities = snapshot.value as MutableMap<String, String>
+
+                refresh()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d(TAG, "Database error: ${error.details}")
+            }
+        }
+
+        _userCitiesRef.addListenerForSingleValueEvent(_citiesListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _userCitiesRef.removeEventListener(_citiesListener)
+    }
+
+    private fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
             _weatherLoading.postValue(true)
 
-            _citiesLists.clear()
-
-            val cities = repository.getCitiesFromFirebase()
-
             Log.d(TAG, "Refresh running on thread: ${Thread.currentThread()}")
 
-            cities.forEach { city ->
-                val location = repository.getCoordinates(city)
+            val fetchedData = mutableListOf<CityModel>()
+
+            _cities.forEach { city ->
+                val location = repository.getCoordinates(city.value)
                 val weather = repository.getWeather(location[0].lat!!, location[0].lon!!)
                 val places = repository.getPlaceId(location[0].cityName!!)
 
-                _citiesLists.add(
-                    CityModel(weather, location, places)
-                )
+                fetchedData.add(CityModel(weather, location, places))
             }
 
-            _citiesLiveData.postValue(_citiesLists)
+            _citiesLiveData.postValue(fetchedData)
             _weatherLoading.postValue(false)
         }
     }
@@ -62,15 +89,14 @@ class CitiesDataViewModel constructor(
             Log.d(TAG, "AddCity running on thread: ${Thread.currentThread()}")
 
             if (location.isNotEmpty()) {
-                val alreadyExists = repository.isCityInDb(location[0].cityName!!)
-
-                if (!alreadyExists) {
-                    repository.storeCity(location[0].cityName!!)
-                    _cityAdded.postValue(true)
-                    refresh()
-                }
-                else {
-                    _cityAdded.postValue(false)
+                when (_cities.containsKey(location[0].cityName!!)) {
+                    false -> {
+                        repository.storeCity(location[0].cityName!!)
+                        true
+                    }
+                    true -> { false }
+                }.also { result ->
+                    _cityAdded.postValue(result)
                 }
             }
             else {
@@ -81,16 +107,16 @@ class CitiesDataViewModel constructor(
 
     fun removeCity(cityName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val isInDb = repository.isCityInDb(cityName)
-
             Log.d(TAG, "RemoveCity running on thread: ${Thread.currentThread()}")
 
-            if (isInDb) {
-                repository.removeCity(cityName)
-                _cityDeleted.postValue(true)
+            if (_cities.keys.contains(cityName)) {
+                repository.removeCity(_cities.entries.find { cityName == it.value }?.key!!)
+                true
             }
             else {
-                _cityDeleted.postValue(false)
+                false
+            }.also { result ->
+                _cityDeleted.postValue(result)
             }
         }
     }
@@ -98,11 +124,7 @@ class CitiesDataViewModel constructor(
     fun removeSelectedCities(cities: Set<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             for (city in cities) {
-                val isInDb = repository.isCityInDb(city)
-
-                if (isInDb) {
-                    repository.removeCity(city)
-                }
+                repository.removeCity(_cities.entries.find { city == it.value }?.key!!)
             }
 
             _cityDeleted.postValue(true)

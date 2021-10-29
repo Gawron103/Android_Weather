@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="logo_color">#FE5656</color>
+    <color name="city_selected">#8592c9</color>
 </resources>

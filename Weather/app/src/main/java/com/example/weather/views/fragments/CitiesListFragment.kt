@@ -50,7 +50,7 @@ class CitiesListFragment : Fragment() {
 
         args.newCity?.let { name ->
             addCity(name)
-        } ?: _viewModel.refresh()
+        }
     }
 
     override fun onCreateView(
@@ -115,22 +115,22 @@ class CitiesListFragment : Fragment() {
     }
 
     private fun observeWeatherViewModel() {
-        _viewModel.citiesLiveData.observe(requireActivity(), { cities ->
+        _viewModel.citiesLiveData.observe(viewLifecycleOwner, { cities ->
             _citiesWeatherListAdapter.updateCities(cities)
         })
 
-        _viewModel.weatherLoading.observe(requireActivity(), { isLoading ->
+        _viewModel.weatherLoading.observe(viewLifecycleOwner, { isLoading ->
             binding.pbLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
                 binding.rvCitiesList.visibility = if (isLoading) View.GONE else View.VISIBLE
                 binding.btnAdd.visibility = if (isLoading) View.GONE else View.VISIBLE
         })
 
-        _viewModel.cityAdded.observe(requireActivity(), { cityAdded ->
+        _viewModel.cityAdded.observe(viewLifecycleOwner, { cityAdded ->
             val message = if (cityAdded) "New city added" else "City already exists"
             Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
         })
 
-        _viewModel.cityDeleted.observe(requireActivity(), { cityDeleted ->
+        _viewModel.cityDeleted.observe(viewLifecycleOwner, { cityDeleted ->
             val message = if (cityDeleted) "City deleted" else "Cannot delete the city"
             Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
         })

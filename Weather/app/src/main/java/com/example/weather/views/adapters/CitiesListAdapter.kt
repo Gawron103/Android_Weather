@@ -96,13 +96,11 @@ class CitiesListAdapter(
                 binding.ivCheckdIcon.visibility = when (binding.ivCheckdIcon.visibility) {
                     View.GONE -> {
                         _selectedItems += cityModel.locationModel?.get(0)?.cityName!!
-//                        binding.root.background.setTint(Color.BLUE)
-                        binding.root.background.setTint(Color.parseColor("#c9c7c1"))
+                        binding.root.background.setTint(context.getColor(R.color.city_selected))
                         View.VISIBLE
                     }
                     else -> {
                         _selectedItems -= cityModel.locationModel?.get(0)?.cityName!!
-//                        binding.root.background.setTint(Color.WHITE)
                         binding.root.background.setTint(Color.parseColor("#ffffff"))
                         View.GONE
                     }

@@ -3,6 +3,7 @@ package com.example.weather.views.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -102,13 +103,13 @@ class CurrentLocationFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        _viewModel.isLoadingWeather.observe(requireActivity(), { isLoading ->
+        _viewModel.isLoadingWeather.observe(viewLifecycleOwner, { isLoading ->
             binding.pbLoadingWeatherForLocation.visibility = if (isLoading) View.VISIBLE else View.GONE
             binding.cardView2.visibility = if (isLoading) View.GONE else View.VISIBLE
             binding.rvForecast.visibility = if (isLoading) View.GONE else View.VISIBLE
         })
 
-        _viewModel.cityModel.observe(requireActivity(), { model ->
+        _viewModel.cityModel.observe(viewLifecycleOwner, { model ->
             _forecastAdapter.updateForecast(model.weatherModel?.dailyConditions!!)
             updateUI()
         })
