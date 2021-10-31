@@ -42,8 +42,9 @@ class CitiesDataViewModel constructor(
             override fun onDataChange(snapshot: DataSnapshot) {
                 _cities.clear()
 
-                Log.d(TAG, "Values: ${snapshot.value}")
-                _cities = snapshot.value as MutableMap<String, String>
+                snapshot.children.forEach { snap ->
+                    _cities[snap.key as String] = snap.value as String
+                }
 
                 refresh()
             }
@@ -89,7 +90,7 @@ class CitiesDataViewModel constructor(
             Log.d(TAG, "AddCity running on thread: ${Thread.currentThread()}")
 
             if (location.isNotEmpty()) {
-                when (_cities.containsKey(location[0].cityName!!)) {
+                when (_cities.containsValue(location[0].cityName!!)) {
                     false -> {
                         repository.storeCity(location[0].cityName!!)
                         true
@@ -109,7 +110,7 @@ class CitiesDataViewModel constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "RemoveCity running on thread: ${Thread.currentThread()}")
 
-            if (_cities.keys.contains(cityName)) {
+            if (_cities.values.contains(cityName)) {
                 repository.removeCity(_cities.entries.find { cityName == it.value }?.key!!)
                 true
             }
